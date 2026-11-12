@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Terraform
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
