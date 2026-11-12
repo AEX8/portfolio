@@ -9,3 +9,9 @@ variable "bucket_name" {
   type        = string
   default     = "gayath-portfolio-site"
 }
+
+variable "github_repo" {
+  description = "GitHub repo allowed to deploy, as owner/name"
+  type        = string
+  default     = "AEX8/portfolio"
+}
