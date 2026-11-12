@@ -1,10 +1,14 @@
-# Rewrites clean URLs (/projects, /projects/) to /projects/index.html
+# Runs on every request: redirects www to the main domain, then rewrites
+# clean URLs (/projects, /projects/) to /projects/index.html.
+# templatefile() fills in ${apex_domain} from var.domain_name.
 resource "aws_cloudfront_function" "url_rewrite" {
   name    = "portfolio-url-rewrite"
   runtime = "cloudfront-js-2.0"
-  comment = "Rewrite clean URLs to index.html for Astro routes"
+  comment = "Redirect www to apex and rewrite clean URLs for Astro routes"
   publish = true
-  code    = file("${path.module}/functions/url-rewrite.js")
+  code = templatefile("${path.module}/functions/url-rewrite.js", {
+    apex_domain = var.domain_name
+  })
 }
 
 # Lets CloudFront sign its requests to the private S3 bucket
@@ -29,6 +33,9 @@ resource "aws_cloudfront_distribution" "site" {
   http_version        = "http2and3"
   price_class         = "PriceClass_All"
 
+  # The custom hostnames this distribution answers on
+  aliases = local.site_hostnames
+
   # Where CloudFront fetches files from: the private S3 bucket, signed with OAC
   origin {
     origin_id                = "s3-site"
@@ -44,7 +51,7 @@ resource "aws_cloudfront_distribution" "site" {
     compress               = true
     cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
 
-    # Run the URL rewrite on every request before it reaches S3
+    # Run the redirect and URL rewrite on every request before it reaches S3
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.url_rewrite.arn
@@ -73,8 +80,12 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
-  # Use CloudFront's free *.cloudfront.net certificate for now (custom domain comes in Phase 4)
+  # Our own ACM certificate for gayath.dev and www.gayath.dev.
+  # sni-only is free. Never switch to "vip" (dedicated IP): it costs a lot.
+  # ----------------------- IMPORTANT.
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }

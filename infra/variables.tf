@@ -15,3 +15,9 @@ variable "github_oidc_subject_prefix" {
   type        = string
   default     = "repo:AEX8@232728231/portfolio@1454788922"
 }
+
+variable "domain_name" {
+  description = "Main domain for the site. Its Route 53 hosted zone is created when the domain is registered."
+  type        = string
+  default     = "gayath.dev"
+}
