@@ -21,11 +21,14 @@ data "aws_iam_policy_document" "github_trust" {
       values   = ["sts.amazonaws.com"]
     }
 
-    # The token must come from this repo's main branch
+    # The token must come from this repo's main branch.
+    # GitHub uses the immutable subject format, which includes the
+    # numeric owner and repo IDs, so a recreated repo with the same
+    # name can never match.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:ref:refs/heads/main"]
+      values   = ["${var.github_oidc_subject_prefix}:ref:refs/heads/main"]
     }
   }
 }
