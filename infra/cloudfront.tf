@@ -51,6 +51,9 @@ resource "aws_cloudfront_distribution" "site" {
     compress               = true
     cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
 
+    # Add the security headers (security-headers.tf) to every response
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
     # Run the redirect and URL rewrite on every request before it reaches S3
     function_association {
       event_type   = "viewer-request"
@@ -82,7 +85,7 @@ resource "aws_cloudfront_distribution" "site" {
 
   # Our own ACM certificate for gayath.dev and www.gayath.dev.
   # sni-only is free. Never switch to "vip" (dedicated IP): it costs a lot.
-  # ----------------------- IMPORTANT.
+  # ------------------------- IMPORTANT -----------------.
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
     ssl_support_method       = "sni-only"
