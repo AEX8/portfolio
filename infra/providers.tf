@@ -7,6 +7,17 @@ terraform {
       version = "~> 6.0"
     }
   }
+
+  # State lives in S3 (bucket created by infra/bootstrap), not on this laptop.
+  # use_lockfile writes a .tflock file next to the state while a run is in
+  # progress, so two runs can never change it at the same time.
+  backend "s3" {
+    bucket       = "gayath-portfolio-tfstate"
+    key          = "portfolio/terraform.tfstate"
+    region       = "ap-southeast-2"
+    encrypt      = true
+    use_lockfile = true
+  }
 }
 
 # Main provider: everything lives in Sydney by default
