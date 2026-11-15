@@ -1,0 +1,429 @@
+---
+// Fixed background: a night sky drawn like an old star chart.
+// Code only for now. The ink clouds can be swapped for real artwork later.
+const W = 1600;
+const H = 1000;
+const f = (n: number) => n.toFixed(1);
+
+// Seeded random so the sky is the same on every load
+let seed = 11;
+const rand = () => {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+};
+
+// Star field, thinner in the middle so the content stays calm
+const stars: { x: number; y: number; r: number; o: number; tw: string }[] = [];
+while (stars.length < 170) {
+  const x = rand() * W;
+  const y = rand() * H;
+  const inCentre = ((x - 800) / 520) ** 2 + ((y - 500) / 300) ** 2 < 1;
+  if (inCentre && rand() < 0.75) continue;
+  const tw = stars.length % 7 === 0 ? `tw tw${stars.length % 5}` : '';
+  stars.push({ x, y, r: 0.5 + rand() * 1.1, o: 0.25 + rand() * 0.6, tw });
+}
+
+// Four point sparkle stars
+const sparkle = (s: number) => {
+  const w = s * 0.09;
+  return `M0 ${-s}L${w} ${-w}L${s} 0L${w} ${w}L0 ${s}L${-w} ${w}L${-s} 0L${-w} ${-w}Z`;
+};
+const sparkles = [
+  { x: 230, y: 250, s: 22, ring: false },
+  { x: 1505, y: 690, s: 40, ring: true },
+  { x: 388, y: 918, s: 28, ring: false },
+  { x: 1110, y: 250, s: 12, ring: false },
+  { x: 1300, y: 130, s: 10, ring: false },
+];
+
+// Constellations: points, then which points join up
+const constellations = [
+  {
+    pts: [[860, 205], [905, 165], [955, 148], [1005, 128], [1010, 175], [1062, 170], [1045, 198]],
+    links: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 4]],
+  },
+  {
+    pts: [[226, 742], [282, 718], [318, 768], [276, 806], [214, 790]],
+    links: [[0, 1], [1, 2], [2, 3], [3, 4]],
+  },
+];
+
+// Ringed planet emblem in the top right, below the nav
+const emblem = { x: 1515, y: 160, r: 88, ring: 186, tilt: -20 };
+const axisTicks = [-160, -144, 118, 134];
+
+// Ink brush strokes, drawn flat then turned into place, so the brush grain follows the stroke
+const strands = [
+  'M0 0C150 -30 300 -40 520 -12C600 -2 680 -20 760 -42L760 -14C680 10 600 30 520 24C300 8 150 20 0 46Z',
+  'M60 -74C200 -98 340 -104 520 -84L520 -64C340 -80 200 -72 60 -50Z',
+  'M200 56C350 44 480 58 640 32L640 44C480 70 350 60 200 68Z',
+];
+---
+
+<div class="backdrop" aria-hidden="true">
+  <!-- Faint milky way band -->
+  <div class="nebula"></div>
+
+  <!-- Stars, arcs and constellations -->
+  <svg class="layer" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice">
+    <!-- Large orbital arcs -->
+    <g class="arcs">
+      <circle cx="380" cy="990" r="330"></circle>
+      <circle class="dashed" cx="380" cy="990" r="480"></circle>
+      <circle class="dashed faint" cx="800" cy="520" r="620"></circle>
+    </g>
+
+    <!-- Star field -->
+    <g class="stars">
+      {stars.map((s) => <circle class={s.tw} cx={f(s.x)} cy={f(s.y)} r={f(s.r)} opacity={s.o.toFixed(2)} />)}
+    </g>
+
+    <!-- Sparkles -->
+    {
+      sparkles.map((s, i) => (
+        <g class:list={['sparkle', `sp${i}`]} transform={`translate(${s.x} ${s.y})`}>
+          {s.ring && <circle class="sparkle-ring" r={s.s * 1.05} />}
+          <path d={sparkle(s.s)} />
+          <path d={sparkle(s.s * 0.45)} transform="rotate(45)" />
+        </g>
+      ))
+    }
+
+    <!-- Constellations draw themselves in once -->
+    {
+      constellations.map((c, ci) => (
+        <g class:list={['constellation', `c${ci}`]}>
+          {c.links.map(([a, b]) => (
+            <path pathLength="1" d={`M${c.pts[a][0]} ${c.pts[a][1]}L${c.pts[b][0]} ${c.pts[b][1]}`} />
+          ))}
+          {c.pts.map(([x, y]) => <circle cx={x} cy={y} r="2.4" />)}
+        </g>
+      ))
+    }
+
+    <!-- Shooting stars now and then -->
+    <path class="shoot s0" pathLength="1" d="M300 170Q440 90 610 110"></path>
+    <path class="shoot s1" pathLength="1" d="M960 905Q1080 840 1230 860"></path>
+  </svg>
+
+  <!-- Ringed planet emblem, kept on the right on any screen shape -->
+  <svg class="layer emblem-layer" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMin meet">
+    <g class="emblem" transform={`translate(${emblem.x} ${emblem.y})`}>
+      <!-- Slowly turning dashed orbit -->
+      <g class="emblem-spin">
+        <circle class="em-thin dashed" r={emblem.r + 46}></circle>
+      </g>
+
+      <!-- Axis line with tick marks -->
+      <line class="em-thin" x1="0" y1="-185" x2="0" y2="148"></line>
+      {axisTicks.map((y) => <line class="em-thin" x1="-9" y1={y} x2="9" y2={y} />)}
+
+      <!-- Planet: double engraved outline, with a heavier line on the lit edge -->
+      <circle class="em-line" r={emblem.r}></circle>
+      <circle class="em-thin" r={emblem.r - 8}></circle>
+      <path class="em-bold" d={`M0 ${-emblem.r}A${emblem.r} ${emblem.r} 0 0 0 -62.2 62.2`}></path>
+
+      <!-- Tilted ring: dashed behind the planet, solid double line across the front -->
+      <g transform={`rotate(${emblem.tilt})`}>
+        <path class="em-thin dashed" d={`M${-emblem.ring} 0A${emblem.ring} 34 0 0 1 ${emblem.ring} 0`}></path>
+        <path class="em-line" d={`M${-emblem.ring} 0A${emblem.ring} 34 0 0 0 ${emblem.ring} 0`}></path>
+        <path class="em-thin" d={`M${-emblem.ring + 14} 0A${emblem.ring - 14} 26 0 0 0 ${emblem.ring - 14} 0`}></path>
+      </g>
+
+      <!-- Star at the centre -->
+      <g class="em-star">
+        <path d={sparkle(16)}></path>
+        <path d={sparkle(7)} transform="rotate(45)"></path>
+      </g>
+    </g>
+  </svg>
+
+  <!-- Ink brush clouds, top left -->
+  <svg class="layer ink ink-top" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMinYMin slice">
+    <defs>
+      <!-- Ragged edges plus dry brush streaks along the stroke -->
+      <filter id="ink" x="-10%" y="-60%" width="120%" height="220%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.04" numOctaves="3" seed="4" result="warp"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="warp" scale="30" xChannelSelector="R" yChannelSelector="G" result="rough"></feDisplacementMap>
+        <feTurbulence type="fractalNoise" baseFrequency="0.005 0.16" numOctaves="4" seed="12" result="grain"></feTurbulence>
+        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.2 -0.55" result="streaks"></feColorMatrix>
+        <feComposite in="rough" in2="streaks" operator="in"></feComposite>
+      </filter>
+      <!-- Strokes fade in and out along their length -->
+      <linearGradient id="ink-bone" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#cfc6b6" stop-opacity="0"></stop>
+        <stop offset="0.25" stop-color="#cfc6b6" stop-opacity="0.6"></stop>
+        <stop offset="0.7" stop-color="#cfc6b6" stop-opacity="0.45"></stop>
+        <stop offset="1" stop-color="#cfc6b6" stop-opacity="0"></stop>
+      </linearGradient>
+      <linearGradient id="ink-blue" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#4d6788" stop-opacity="0"></stop>
+        <stop offset="0.3" stop-color="#4d6788" stop-opacity="0.75"></stop>
+        <stop offset="1" stop-color="#4d6788" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <g transform="translate(-110 330) rotate(-34) scale(1 1.1)">
+      <g class="cloud" filter="url(#ink)">
+        {strands.map((d) => <path d={d} fill="url(#ink-bone)" />)}
+      </g>
+    </g>
+  </svg>
+
+  <!-- Ink brush clouds, bottom right -->
+  <svg class="layer ink" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMax slice">
+    <g transform="translate(1680 760) rotate(148) scale(1 1.1)">
+      <g class="cloud" filter="url(#ink)">
+        {strands.slice(0, 2).map((d) => <path d={d} fill="url(#ink-bone)" />)}
+      </g>
+    </g>
+    <g transform="translate(1700 870) rotate(152) scale(0.8 0.95)">
+      <g class="cloud" filter="url(#ink)">
+        <path d={strands[0]} fill="url(#ink-blue)"></path>
+      </g>
+    </g>
+  </svg>
+
+  <!-- Paper grain over everything -->
+  <svg class="layer grain" preserveAspectRatio="none">
+    <filter id="grain-noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.9  0 0 0 0 0.87  0 0 0 0 0.82  0 0 0 0.08 0"></feColorMatrix>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-noise)"></rect>
+  </svg>
+
+  <div class="dim"></div>
+  <div class="vignette"></div>
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Soft diagonal band of light, like the milky way */
+  .nebula {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(ellipse 22% 9% at 62% 46%, rgba(77, 103, 136, 0.22), transparent 70%),
+      radial-gradient(ellipse 18% 7% at 48% 58%, rgba(77, 103, 136, 0.16), transparent 70%),
+      radial-gradient(ellipse 14% 6% at 74% 36%, rgba(138, 132, 120, 0.1), transparent 70%);
+    transform: rotate(-24deg);
+    filter: blur(14px);
+  }
+
+  /* Ringed planet emblem */
+  .em-thin {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.32;
+    stroke-width: 1;
+  }
+
+  .em-thin.dashed {
+    stroke-dasharray: 3 8;
+    stroke-opacity: 0.22;
+  }
+
+  .em-line {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.7;
+    stroke-width: 1.3;
+  }
+
+  .em-bold {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.9;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+  }
+
+  .em-star path {
+    fill: var(--text);
+  }
+
+  .em-star {
+    animation: glint 7s ease-in-out infinite;
+  }
+
+  .emblem-spin {
+    animation: spin 160s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Arcs and frame */
+  .arcs circle {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.12;
+  }
+
+  .arcs .dashed {
+    stroke-dasharray: 3 10;
+  }
+
+  .arcs .faint {
+    stroke-opacity: 0.06;
+  }
+
+
+  /* Stars */
+  .stars circle {
+    fill: var(--text);
+  }
+
+  .tw {
+    animation: twinkle 6s ease-in-out infinite;
+  }
+
+  .tw1 { animation-delay: -1.3s; }
+  .tw2 { animation-delay: -2.6s; }
+  .tw3 { animation-delay: -3.9s; }
+  .tw4 { animation-delay: -5.1s; }
+
+  @keyframes twinkle {
+    50% { opacity: 0.08; }
+  }
+
+  .sparkle path {
+    fill: var(--text);
+    opacity: 0.85;
+  }
+
+  .sparkle-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.22;
+  }
+
+  .sparkle {
+    animation: glint 9s ease-in-out infinite;
+  }
+
+  .sp1 { animation-delay: -3s; }
+  .sp2 { animation-delay: -6s; }
+  .sp3 { animation-delay: -1.5s; }
+  .sp4 { animation-delay: -4.5s; }
+
+  @keyframes glint {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+
+  /* Constellation lines draw in once, then stay */
+  .constellation path {
+    stroke: var(--text);
+    stroke-opacity: 0.32;
+    stroke-width: 1;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 2.6s var(--ease) 0.6s forwards;
+  }
+
+  .c1 path {
+    animation-delay: 1.4s;
+  }
+
+  .constellation circle {
+    fill: var(--text);
+    opacity: 0.9;
+  }
+
+  @keyframes draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Shooting stars: a short streak runs along the curve, then hides */
+  .shoot {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-dasharray: 0.22 1.3;
+    stroke-dashoffset: 0.22;
+    opacity: 0;
+    animation: shoot 12s ease-out infinite;
+  }
+
+  .s1 {
+    animation-delay: 6s;
+  }
+
+  @keyframes shoot {
+    0% { stroke-dashoffset: 0.22; opacity: 0; }
+    1.3% { opacity: 0.8; }
+    10.5% { stroke-dashoffset: -1.05; opacity: 0; }
+    100% { stroke-dashoffset: -1.05; opacity: 0; }
+  }
+
+  /* Ink clouds drift a few pixels, very slowly */
+  .ink {
+    will-change: transform;
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+
+  .cloud {
+    opacity: 0.7;
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(-6px, 0, 0); }
+    to { transform: translate3d(6px, -4px, 0); }
+  }
+
+  .grain {
+    mix-blend-mode: overlay;
+  }
+
+  /* Phones: move the emblem into the empty space lower down, soften the top strokes */
+  @media (max-width: 640px) {
+    /* Size it by screen height, pinned right, so it doesn't shrink on narrow screens */
+    .emblem-layer {
+      left: auto;
+      right: 0;
+      width: calc(100vh * 1.6);
+      transform: translate(-48px, 54vh) scale(0.75);
+      transform-origin: top right;
+    }
+
+    .ink-top {
+      opacity: 0.45;
+    }
+
+    /* This one lands on the name on narrow screens */
+    .c0 {
+      display: none;
+    }
+  }
+
+  /* Dims the whole sky evenly so the content stands out */
+  .dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 9, 12, 0.32);
+  }
+
+  /* Darker edges keep the eye in the middle */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 90% 85% at 50% 50%, transparent 55%, rgba(8, 9, 12, 0.7));
+  }
+</style>
