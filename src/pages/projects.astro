@@ -1,0 +1,70 @@
+---
+// Projects: a short header, then project cards two to a row
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/projects/ProjectCard.astro';
+import { PROJECTS } from '../data/projects';
+---
+
+<BaseLayout title="Projects" active="projects" description="Software, data and cloud projects by Gayath.">
+  <section class="page">
+    <header class="head">
+      <h1 class="heading">Projects</h1>
+      <!-- Temporary caption, to be replaced -->
+      <p class="intro">{PROJECTS.length} projects across software, data and cloud.</p>
+    </header>
+
+    <div class="grid">
+      {PROJECTS.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-block: clamp(40px, 7vh, 80px) clamp(48px, 8vh, 96px);
+  }
+
+  /* Heading and caption centred above the grid */
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    margin-bottom: clamp(32px, 6vh, 56px);
+  }
+
+  .heading {
+    font-family: var(--font-mono);
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em; /* keeps the spaced letters visually centred */
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .intro {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #cdc6b9;
+  }
+
+  /* Two cards per row, one on small screens */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(20px, 2.5vw, 32px);
+  }
+
+  @media (max-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
