@@ -1,0 +1,196 @@
+---
+// Top bar: logo on the left, links on the right.
+// Home shows only About (the solar system is the menu there).
+// Every other page shows the solar system pages, so the two always match.
+import type { NavKey } from '../layouts/BaseLayout.astro';
+import { PLANETS, type PlanetKey } from '../lib/orbit';
+
+interface Props {
+  active?: NavKey;
+}
+
+const { active } = Astro.props;
+
+interface Link {
+  key: string;
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+const order: PlanetKey[] = ['projects', 'experience', 'education', 'contact', 'github'];
+const planetLinks: Link[] = order.map((key) => {
+  const p = PLANETS.find((x) => x.key === key)!;
+  return { key: p.key, label: p.label, href: p.href, external: p.external };
+});
+
+const links: Link[] = active === 'home' ? [{ key: 'about', label: 'About', href: '/about' }] : planetLinks;
+---
+
+<header class="nav">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <a class="logo" href="/" aria-label="Gayath, home">
+    G<span class="cursor" aria-hidden="true">_</span>
+  </a>
+
+  <nav aria-label="Main">
+    <ul class="links">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              class="link"
+              href={link.href}
+              aria-current={active === link.key ? 'page' : undefined}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener noreferrer' : undefined}
+            >
+              {link.label}
+              {link.external && <span class="ext" aria-hidden="true">↗</span>}
+              {link.external && <span class="sr-only"> (opens in a new tab)</span>}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--nav-height);
+    margin-inline: var(--gutter);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+  }
+
+  /* Hidden until focused with the keyboard */
+  .skip {
+    position: absolute;
+    left: 0;
+    top: -40px;
+    padding: 6px 10px;
+    background: var(--bg-2);
+    color: var(--accent);
+    font-size: 12px;
+    z-index: 10;
+  }
+
+  .skip:focus {
+    top: 8px;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  .cursor {
+    color: var(--accent);
+    animation: blink 1.2s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .links {
+    display: flex;
+    gap: clamp(16px, 3.5vw, 56px);
+    list-style: none;
+    padding: 0;
+    height: 100%;
+  }
+
+  .links li {
+    display: flex;
+  }
+
+  .link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    transition: color var(--fast) var(--ease);
+  }
+
+  /* Small arrow for links that leave the site */
+  .ext {
+    margin-left: 0.4em;
+    font-size: 0.9em;
+    color: var(--text-muted);
+  }
+
+  /* Accent bar that sits on the bottom border */
+  .link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--slow) var(--ease);
+  }
+
+  .link:hover,
+  .link[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  .link[aria-current='page']::after,
+  .link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Small screens: tighten up, and let the links scroll sideways if they still don't fit */
+  @media (max-width: 640px) {
+    nav {
+      min-width: 0;
+      height: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav {
+      gap: 16px;
+    }
+
+    .links {
+      gap: 10px;
+    }
+
+    .link {
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .ext {
+      margin-left: 0.2em;
+    }
+
+    .logo {
+      font-size: 18px;
+    }
+  }
+</style>
