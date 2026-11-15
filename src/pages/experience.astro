@@ -1,9 +1,463 @@
 ---
-// Experience page (placeholder for now)
+// Experience: a "mission log" of roles, then other roles and community work
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Placeholder from '../components/Placeholder.astro';
+import { COMMUNITY, CV_PATH, OTHER_ROLES, ROLES } from '../data/experience';
+import { PROJECTS } from '../data/projects';
+
+// Title of a linked project, if the role has one
+const projectTitle = (slug?: string) => PROJECTS.find((p) => p.slug === slug)?.title;
+
+// Four point star, same as the Education timeline
+const star = (s: number) => {
+  const w = s * 0.1;
+  return `M0 ${-s}L${w} ${-w}L${s} 0L${w} ${w}L0 ${s}L${-w} ${w}L${-s} 0L${-w} ${-w}Z`;
+};
 ---
 
-<BaseLayout title="Experience" active="experience">
-  <Placeholder title="Experience" />
+<BaseLayout title="Experience" active="experience" description="Gayath's work experience, roles and community involvement.">
+  <section class="page">
+    <header class="head">
+      <h1 class="heading">Experience</h1>
+      <!-- Temporary caption, to be replaced -->
+      <p class="intro">Roles, teams and what I shipped.</p>
+      {
+        CV_PATH ? (
+          <a class="cv" href={CV_PATH} download>
+            Download CV <span aria-hidden="true">↓</span>
+          </a>
+        ) : (
+          <span class="cv cv-soon">CV coming soon</span>
+        )
+      }
+    </header>
+
+    <!-- Main roles: dates on the left like chart coordinates, details on the right -->
+    <ol class="log">
+      {
+        ROLES.map((r, i) => (
+          <li class:list={['entry', { latest: i === 0 }]}>
+            <p class="when">
+              <span>{r.start}</span>
+              <span class="arrow" aria-hidden="true">↓</span>
+              <span class="sr-only"> to </span>
+              <span>{r.end}</span>
+            </p>
+            <span class="marker" aria-hidden="true">
+              <svg viewBox="-16 -16 32 32">
+                {i === 0 && <circle class="star-ring" r="13" />}
+                <path d={star(i === 0 ? 11 : 8)} />
+              </svg>
+            </span>
+            <div class="panel role">
+              <div class="role-head">
+                <h2 class="r-title">{r.title}</h2>
+                {r.type && <span class="type">{r.type}</span>}
+              </div>
+              <p class="company">
+                {r.company}
+                {r.location && <span class="loc"> · {r.location}</span>}
+              </p>
+              {r.bullets.length > 0 && (
+                <ul class="bullets">
+                  {r.bullets.map((b) => (
+                    <li>{b}</li>
+                  ))}
+                </ul>
+              )}
+              {r.tags.length > 0 && (
+                <ul class="tags">
+                  {r.tags.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              )}
+              {r.project && projectTitle(r.project) && (
+                <a class="project-link" href={`/projects#${r.project}`}>
+                  View project <span aria-hidden="true">→</span>
+                  <span class="sr-only">: {projectTitle(r.project)}</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <!-- Other roles and community, side by side -->
+    <div class="extras">
+      <section class="block" aria-labelledby="other-roles">
+        <h2 class="block-title" id="other-roles">Other experience</h2>
+        <div class="panel list-panel">
+          {
+            OTHER_ROLES.length > 0 ? (
+              <ul class="small-list">
+                {OTHER_ROLES.map((o) => (
+                  <li>
+                    <span class="s-title">{o.title}</span>
+                    <span class="s-meta">
+                      {o.org}
+                      {o.period && ` · ${o.period}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="soon">Coming soon</p>
+            )
+          }
+        </div>
+      </section>
+
+      <section class="block" aria-labelledby="community">
+        <h2 class="block-title" id="community">Leadership and community</h2>
+        <div class="panel list-panel">
+          {
+            COMMUNITY.length > 0 ? (
+              <ul class="small-list">
+                {COMMUNITY.map((c) => (
+                  <li>
+                    <span class="s-title">{c.title}</span>
+                    <span class="s-meta">
+                      {c.org}
+                      {c.period && ` · ${c.period}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="soon">Coming soon</p>
+            )
+          }
+        </div>
+      </section>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .page {
+    width: 100%;
+    max-width: 1000px;
+    margin-inline: auto;
+    padding-block: clamp(40px, 7vh, 80px) clamp(48px, 8vh, 96px);
+  }
+
+  /* Centred heading, caption and CV button */
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    margin-bottom: clamp(36px, 6vh, 64px);
+  }
+
+  .heading {
+    font-family: var(--font-mono);
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .intro {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #cdc6b9;
+  }
+
+  .cv {
+    margin-top: 8px;
+    padding: 9px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  a.cv:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .cv-soon {
+    border-style: dashed;
+    color: var(--text-muted);
+  }
+
+  /* Shared panel look, matching the other pages */
+  .panel {
+    background: rgba(14, 16, 21, 0.82);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  /* The log: date column, a thin line with square markers, then the role panel */
+  .log {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    list-style: none;
+    padding: 0;
+    margin-bottom: clamp(48px, 8vh, 80px);
+  }
+
+  .log::before {
+    content: '';
+    position: absolute;
+    left: 172px;
+    top: 26px;
+    bottom: 26px;
+    width: 1px;
+    background: linear-gradient(var(--line-strong), var(--line) 85%, transparent);
+  }
+
+  .entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 148px 1fr;
+    column-gap: 48px;
+  }
+
+  .when {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    padding-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #cdc6b9;
+    text-align: right;
+  }
+
+  .arrow {
+    color: var(--text-muted);
+  }
+
+  /* Star on the line for each role; the latest role shines brightest */
+  .marker {
+    position: absolute;
+    left: 157px;
+    top: 13px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .marker svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .marker path {
+    fill: var(--text);
+    opacity: 0.75;
+  }
+
+  .star-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.4;
+  }
+
+  .latest .marker path {
+    opacity: 1;
+  }
+
+  .latest .role {
+    border-color: var(--line-strong);
+  }
+
+  .role {
+    padding: 22px 26px;
+  }
+
+  .role-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+
+  .r-title {
+    font-family: var(--font-mono);
+    font-size: clamp(17px, 1.6vw, 20px);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .type {
+    padding: 2px 10px;
+    border: 1px solid var(--accent-muted);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .company {
+    margin-top: 4px;
+    font-size: 15px;
+    color: #cdc6b9;
+  }
+
+  .loc {
+    color: var(--text-muted);
+  }
+
+  .bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 14px 0 0 18px;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e6dfd2;
+  }
+
+  .bullets li::marker {
+    color: var(--text-muted);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .tags li {
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Link through to the matching project card */
+  .project-link {
+    display: inline-block;
+    margin-top: 18px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--line-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+  }
+
+  .project-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* Extras: two columns of compact lists */
+  .extras {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .block-title {
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .list-panel {
+    padding: 20px 22px;
+  }
+
+  .small-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .small-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .s-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .s-meta {
+    font-size: 14px;
+    color: #cdc6b9;
+  }
+
+  .soon {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Smaller screens: dates sit above each panel, one column for extras */
+  @media (max-width: 720px) {
+    .log::before,
+    .marker {
+      display: none;
+    }
+
+    .entry {
+      grid-template-columns: 1fr;
+      row-gap: 10px;
+    }
+
+    .when {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      padding-top: 0;
+      text-align: left;
+    }
+
+    .arrow {
+      transform: rotate(-90deg);
+    }
+
+    .extras {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

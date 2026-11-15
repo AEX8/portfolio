@@ -17,8 +17,9 @@ export const PROJECTS: Project[] = [
   {
     slug: 'ibm-consulting-game',
     title: 'IBM AI Consulting Game',
-    summary: TBC,
-    tags: [],
+    summary:
+      'An AI powered, 2D RPG style simulation game that trains junior and graduate consultants. Capstone project with IBM.',
+    tags: ['AI', 'Firebase', 'Vercel'],
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
   },
   { slug: 'parsify', title: 'Parsify', summary: TBC, tags: [] },
