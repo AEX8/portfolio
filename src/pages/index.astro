@@ -1,16 +1,76 @@
 ---
+// Home: name on the left, solar system navigation on the right
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BinaryName from '../components/BinaryName.astro';
+import OrbitNav from '../components/orbit/OrbitNav.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Gayath</h1>
-	</body>
-</html>
+<BaseLayout active="home">
+  <section class="hero">
+    <div class="intro">
+      <h1 class="name">
+        <BinaryName text="Gayath" />
+      </h1>
+      <p class="role">
+        RMIT <span class="sep" aria-hidden="true">/</span> Computer Science Graduate
+      </p>
+    </div>
+
+    <div class="visual">
+      <OrbitNav />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: clamp(24px, 4vw, 64px);
+    padding-block: clamp(24px, 5vh, 64px);
+  }
+
+  .intro {
+    padding-left: clamp(20px, 2.5vw, 40px);
+  }
+
+  /* Small uppercase line under the name, left edge lined up with it */
+  .role {
+    margin-top: 28px;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #ebe5da;
+  }
+
+  .sep {
+    margin-inline: 0.5em;
+    color: var(--accent);
+  }
+
+  .visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Stack on smaller screens */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      align-content: start;
+      padding-top: 64px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .role {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+    }
+  }
+</style>

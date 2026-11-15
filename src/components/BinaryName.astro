@@ -1,0 +1,154 @@
+---
+// A word drawn as pixel letters, where each filled pixel is a 0 or 1
+import { textToGrid } from '../lib/pixel-font';
+
+interface Props {
+  text: string;
+  // Max height of one pixel on screen, in px
+  cell?: number;
+}
+
+const { text, cell = 10.6 } = Astro.props;
+const grid = textToGrid(text);
+const rows = grid.length;
+const cols = grid[0].length;
+
+// One pixel in SVG units. Narrower than tall so strokes read as solid lines.
+const UX = 8;
+const UY = 10;
+const FONT = 9.6;
+
+// Small seeded random, so every build gives the same digits
+let seed = 20261113;
+function rand() {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+}
+
+// How far a nudged cell moves, as a share of a cell
+const NUDGE_SHARE = 0.22;
+
+const bits = grid.flatMap((row, y) =>
+  row.flatMap((cell, x) => {
+    if (cell === null) return [];
+    return [
+      {
+        // Centre of the cell, plus any nudge. The baseline centres digits vertically.
+        x: (x * UX + UX / 2 + cell * UX * NUDGE_SHARE).toFixed(2),
+        y: (y * UY + UY / 2 + FONT * 0.36).toFixed(2),
+        bit: rand() < 0.5 ? '0' : '1',
+        // Most digits full white, a few slightly softer for texture
+        soft: rand() < 0.3,
+        // Eight delay buckets for the reveal
+        delay: `d${Math.floor(rand() * 8)}`,
+      },
+    ];
+  })
+);
+---
+
+<svg
+  class="binary"
+  data-binary
+  role="img"
+  aria-label={text}
+  viewBox={`0 0 ${cols * UX} ${rows * UY}`}
+  width={((cols * cell * UX) / UY).toFixed(1)}
+  height={(rows * cell).toFixed(1)}
+>
+  {
+    bits.map((b) => (
+      <text class:list={['bit', b.delay, { soft: b.soft }]} x={b.x} y={b.y}>
+        {b.bit}
+      </text>
+    ))
+  }
+</svg>
+
+<script>
+  // Every so often flip one digit. Only filled pixels change, so the letters stay intact.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<SVGElement>('[data-binary]').forEach((root) => {
+    const bits = Array.from(root.querySelectorAll<SVGTextElement>('.bit'));
+    if (!bits.length) return;
+
+    let timer: number | undefined;
+
+    const flip = () => {
+      const bit = bits[Math.floor(Math.random() * bits.length)];
+      bit.textContent = bit.textContent === '0' ? '1' : '0';
+      bit.classList.remove('flash');
+      void bit.getBBox(); // restart the flash animation
+      bit.classList.add('flash');
+    };
+
+    const start = () => {
+      if (timer || reduce.matches || document.hidden) return;
+      timer = window.setInterval(flip, 220);
+    };
+
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = undefined;
+    };
+
+    // Wait for the reveal to finish first
+    window.setTimeout(start, 1200);
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    reduce.addEventListener('change', () => (reduce.matches ? stop() : start()));
+  });
+</script>
+
+<style>
+  /* Shrinks with its container, never grows past the size set above */
+  .binary {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+    user-select: none;
+  }
+
+  .bit {
+    fill: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 9.6px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-anchor: middle;
+    filter: drop-shadow(0 0 2px rgba(255, 252, 246, 0.65));
+    animation: bit-in 700ms var(--ease) both;
+  }
+
+  .soft {
+    opacity: 1;
+  }
+
+  /* Reveal delays */
+  .d1 { animation-delay: 60ms; }
+  .d2 { animation-delay: 120ms; }
+  .d3 { animation-delay: 180ms; }
+  .d4 { animation-delay: 240ms; }
+  .d5 { animation-delay: 300ms; }
+  .d6 { animation-delay: 360ms; }
+  .d7 { animation-delay: 420ms; }
+
+  @keyframes bit-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* A changed digit turns indigo for a moment, then fades back to white */
+  .bit.flash {
+    animation: bit-flash 900ms var(--ease);
+  }
+
+  @keyframes bit-flash {
+    0% {
+      fill: var(--accent);
+      opacity: 1;
+    }
+  }
+</style>

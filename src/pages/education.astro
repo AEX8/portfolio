@@ -1,0 +1,356 @@
+---
+// Education: a constellation timeline of milestones, then coursework and course projects
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { COURSE_GROUPS, COURSE_PROJECTS, MILESTONES } from '../data/education';
+import { PROJECTS } from '../data/projects';
+
+const courseProjects = COURSE_PROJECTS.map((slug) => PROJECTS.find((p) => p.slug === slug)).filter(
+  (p) => p !== undefined
+);
+
+// Four point star used on the timeline
+const star = (s: number) => {
+  const w = s * 0.1;
+  return `M0 ${-s}L${w} ${-w}L${s} 0L${w} ${w}L0 ${s}L${-w} ${w}L${-s} 0L${-w} ${-w}Z`;
+};
+---
+
+<BaseLayout title="Education" active="education" description="Gayath's education: Bachelor of Computer Science at RMIT University.">
+  <section class="page">
+    <header class="head">
+      <h1 class="heading">Education</h1>
+      <!-- Temporary caption, to be replaced -->
+      <p class="intro">Computer Science at RMIT University.</p>
+    </header>
+
+    <!-- Milestones as stars joined into a constellation -->
+    <ol class="timeline">
+      {
+        MILESTONES.map((m) => (
+          <li class:list={['milestone', { main: m.main }]}>
+            <span class="star" aria-hidden="true">
+              <svg viewBox="-16 -16 32 32">
+                {m.main && <circle class="star-ring" r="13" />}
+                <path d={star(m.main ? 11 : 8)} />
+              </svg>
+            </span>
+            <div class="panel">
+              {m.period && <p class="period">{m.period}</p>}
+              <h2 class="m-title">{m.title}</h2>
+              <p class="org">{m.org}</p>
+              {m.details.length > 0 && (
+                <ul class="details">
+                  {m.details.map((d) => (
+                    <li>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <!-- Key coursework grouped by skill -->
+    <section class="block" aria-labelledby="coursework">
+      <h2 class="block-title" id="coursework">Key coursework</h2>
+      <div class="groups">
+        {
+          COURSE_GROUPS.map((g) => (
+            <div class="panel group">
+              <h3 class="g-title">{g.name}</h3>
+              {g.courses.length > 0 ? (
+                <ul class="tags">
+                  {g.courses.map((c) => (
+                    <li>{c}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="soon">Coming soon</p>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Course projects, linking to their cards on the Projects page -->
+    <section class="block" aria-labelledby="course-projects">
+      <h2 class="block-title" id="course-projects">Course projects</h2>
+      {
+        courseProjects.length > 0 ? (
+          <ul class="project-links">
+            {courseProjects.map((p) => (
+              <li>
+                <a class="panel project-link" href={`/projects#${p.slug}`}>
+                  <span class="p-title">{p.title}</span>
+                  <span class="p-arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="panel soon-panel">Coming soon</p>
+        )
+      }
+    </section>
+  </section>
+</BaseLayout>
+
+<style>
+  .page {
+    width: 100%;
+    max-width: 920px;
+    margin-inline: auto;
+    padding-block: clamp(40px, 7vh, 80px) clamp(48px, 8vh, 96px);
+  }
+
+  /* Centred heading and caption, same as Projects */
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    margin-bottom: clamp(36px, 6vh, 64px);
+  }
+
+  .heading {
+    font-family: var(--font-mono);
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .intro {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #cdc6b9;
+  }
+
+  /* Shared panel look, matching the project cards */
+  .panel {
+    background: rgba(14, 16, 21, 0.82);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  /* Timeline: a thin line joining the stars */
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    list-style: none;
+    padding: 0 0 0 64px;
+    margin-bottom: clamp(48px, 8vh, 80px);
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: 30px;
+    bottom: 30px;
+    width: 1px;
+    background: linear-gradient(var(--line-strong), var(--line) 85%, transparent);
+  }
+
+  .milestone {
+    position: relative;
+  }
+
+  .star {
+    position: absolute;
+    left: -58px;
+    top: 18px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .star svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .star path {
+    fill: var(--text);
+    opacity: 0.75;
+  }
+
+  .star-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.4;
+  }
+
+  .main .star path {
+    opacity: 1;
+  }
+
+  .milestone .panel {
+    padding: 22px 26px;
+  }
+
+  .main .panel {
+    border-color: var(--line-strong);
+  }
+
+  .period {
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .m-title {
+    font-family: var(--font-mono);
+    font-size: clamp(17px, 1.6vw, 20px);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .org {
+    margin-top: 4px;
+    font-size: 15px;
+    color: #cdc6b9;
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 14px;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+    font-size: 15px;
+    color: #e6dfd2;
+  }
+
+  /* Section blocks under the timeline */
+  .block {
+    margin-bottom: clamp(40px, 7vh, 64px);
+  }
+
+  .block-title {
+    margin-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .group {
+    padding: 20px 22px;
+  }
+
+  .g-title {
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .tags li {
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: 13px;
+    color: #e6dfd2;
+  }
+
+  .soon {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .soon-panel {
+    padding: 20px 22px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .project-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .project-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  .project-link:hover {
+    border-color: var(--line-strong);
+    color: var(--accent);
+  }
+
+  /* Phones: one column, tighter timeline */
+  @media (max-width: 640px) {
+    .timeline {
+      padding-left: 44px;
+    }
+
+    .timeline::before {
+      left: 14px;
+    }
+
+    .star {
+      left: -46px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .groups,
+    .project-links {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
