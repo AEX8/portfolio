@@ -1,0 +1,622 @@
+---
+// Solar system navigation: "Me" in the centre, four pages on tilted orbits,
+// each orbit drawn faintly with a brighter trail just behind its planet
+import { BASE_TILT, BASE_TURN, PLANETS, VIEW, depthScale, project, trailOpacity, trailPaths } from '../../lib/orbit';
+
+const turnDeg = ((BASE_TURN * 180) / Math.PI).toFixed(2);
+
+const planets = PLANETS.map((p) => {
+  const pos = project(p.radius, p.angle);
+  return {
+    ...p,
+    pos,
+    side: pos.x > VIEW.cx ? 'right' : 'left',
+    scale: depthScale(pos.depth),
+    trail: trailPaths(p.radius, p.angle),
+  };
+});
+const f = (n: number) => n.toFixed(1);
+---
+
+<div class="orbit" data-orbit>
+  <svg class="orbit-svg" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} aria-hidden="true">
+    <defs>
+      <radialGradient id="orbit-halo">
+        <stop offset="0" stop-color="#e6dfd2" stop-opacity="0.22"></stop>
+        <stop offset="0.35" stop-color="#e6dfd2" stop-opacity="0.05"></stop>
+        <stop offset="1" stop-color="#e6dfd2" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="orbit-sun-halo">
+        <stop offset="0" stop-color="#4d6788" stop-opacity="0.35"></stop>
+        <stop offset="0.3" stop-color="#4d6788" stop-opacity="0.1"></stop>
+        <stop offset="1" stop-color="#4d6788" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="orbit-sun-body">
+        <stop offset="0" stop-color="#0c0e12"></stop>
+        <stop offset="0.75" stop-color="#151a22"></stop>
+        <stop offset="1" stop-color="#2a3442"></stop>
+      </radialGradient>
+    </defs>
+
+    <!-- Full orbits, kept faint -->
+    {
+      planets.map((p) => (
+        <ellipse
+          class="orbit-line"
+          data-orbit-line={p.key}
+          cx={VIEW.cx}
+          cy={VIEW.cy}
+          rx={p.radius}
+          ry={f(p.radius * BASE_TILT)}
+          transform={`rotate(${turnDeg} ${VIEW.cx} ${VIEW.cy})`}
+        />
+      ))
+    }
+
+    <!-- Trails -->
+    {
+      planets.map((p) => (
+        <g class="trail" data-trail={p.key}>
+          {p.trail.map((d, i) => (
+            <path d={d} stroke-opacity={trailOpacity(i)} />
+          ))}
+        </g>
+      ))
+    }
+
+    <!-- Centre -->
+    <g class="sun" data-planet="sun" transform={`translate(${VIEW.cx} ${VIEW.cy})`}>
+      <circle class="sun-halo" r="130" fill="url(#orbit-sun-halo)"></circle>
+      <circle class="sun-pulse" r="32"></circle>
+      <circle class="sun-outer" r="40"></circle>
+      <circle class="sun-body" r="32" fill="url(#orbit-sun-body)"></circle>
+    </g>
+
+    <!-- Planets -->
+    {
+      planets.map((p) => (
+        <g class="planet" data-planet={p.key} transform={`translate(${f(p.pos.x)} ${f(p.pos.y)}) scale(${p.scale.toFixed(3)})`}>
+          <circle class="planet-halo" r="30" fill="url(#orbit-halo)" />
+          <circle class="planet-ring" r="12" />
+          <path class="planet-star" d="M0 -10L1 -1L10 0L1 1L0 10L-1 1L-10 0L-1 -1Z" />
+          <circle class="planet-core" r="2.6" />
+        </g>
+      ))
+    }
+  </svg>
+
+  <nav class="links" aria-label="Explore">
+    <a class="node node-sun" href="/about" data-node="sun" aria-label="Me: about me">
+      <span class="hit" aria-hidden="true"></span>
+      <span class="label">
+        <span class="title">Me</span>
+      </span>
+    </a>
+
+    {
+      planets.map((p) => (
+        <a
+          class="node"
+          href={p.href}
+          data-node={p.key}
+          data-side={p.side}
+          aria-label={`${p.label}: ${p.hint}${p.external ? ' (opens in a new tab)' : ''}`}
+          target={p.external ? '_blank' : undefined}
+          rel={p.external ? 'noopener noreferrer' : undefined}
+        >
+          <span class="hit" aria-hidden="true" />
+          <span class="label">
+            <span class="icon" aria-hidden="true">
+              {p.key === 'projects' && (
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3 21 8 12 13 3 8z" />
+                  <path d="M3 12.5 12 17.5 21 12.5" />
+                  <path d="M3 16.5 12 21.5 21 16.5" />
+                </svg>
+              )}
+              {p.key === 'experience' && (
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="7" width="18" height="13" rx="1" />
+                  <path d="M9 7V4h6v3M3 12h18" />
+                </svg>
+              )}
+              {p.key === 'education' && (
+                <svg viewBox="0 0 24 24">
+                  <path d="M2 9.5 12 5l10 4.5-10 4.5z" />
+                  <path d="M6 11.5V16c0 1.4 2.7 2.8 6 2.8s6-1.4 6-2.8v-4.5M22 9.5V15" />
+                </svg>
+              )}
+              {p.key === 'contact' && (
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="14" rx="1" />
+                  <path d="M3 6.5 12 13l9-6.5" />
+                </svg>
+              )}
+              {p.key === 'github' && (
+                <svg viewBox="0 0 16 16" class="filled">
+                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                </svg>
+              )}
+            </span>
+            <span class="text">
+              <span class="title">{p.label}</span>
+              <span class="hint">{p.hint}</span>
+            </span>
+          </span>
+        </a>
+      ))
+    }
+  </nav>
+</div>
+
+<script>
+  import { BASE_TILT, BASE_TURN, PLANETS, VIEW, depthScale, project, trailPaths } from '../../lib/orbit';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
+    const svg = root.querySelector('svg')!;
+    const parts = PLANETS.map((p, i) => {
+      const trail = svg.querySelector<SVGGElement>(`[data-trail="${p.key}"]`)!;
+      return {
+        p,
+        offset: i * 1.7,
+        planet: svg.querySelector<SVGGElement>(`[data-planet="${p.key}"]`)!,
+        trail,
+        pieces: Array.from(trail.querySelectorAll('path')),
+        line: svg.querySelector<SVGEllipseElement>(`[data-orbit-line="${p.key}"]`)!,
+        node: root.querySelector<HTMLElement>(`[data-node="${p.key}"]`)!,
+      };
+    });
+    const sun = svg.querySelector<SVGGElement>('[data-planet="sun"]')!;
+
+    let tilt = BASE_TILT;
+    let turn = BASE_TURN;
+    let target = { tilt: BASE_TILT, turn: BASE_TURN };
+    let time = 0;
+    let last = 0;
+    let raf = 0;
+    let onScreen = true;
+    let hovered = 0;
+
+    // Trails only need redrawing when the tilt changes
+    let drawnTilt = NaN;
+    let drawnTurn = NaN;
+
+    // Place orbits, trails, planets and their links for the current time
+    const draw = () => {
+      const moved = Math.abs(tilt - drawnTilt) > 0.0005 || Math.abs(turn - drawnTurn) > 0.0005;
+      if (moved) {
+        drawnTilt = tilt;
+        drawnTurn = turn;
+      }
+      const turnDeg = ((turn * 180) / Math.PI).toFixed(2);
+      for (const { p, offset, planet, pieces, line, node } of parts) {
+        if (moved) {
+          trailPaths(p.radius, p.angle, tilt, turn).forEach((d, i) => pieces[i]?.setAttribute('d', d));
+          line.setAttribute('ry', (p.radius * tilt).toFixed(2));
+          line.setAttribute('transform', `rotate(${turnDeg} ${VIEW.cx} ${VIEW.cy})`);
+        }
+        // Drift gently back and forth along the orbit, with a faint bob
+        const t = time * p.speed * 0.75 + offset;
+        // Scaled by orbit size so outer planets don't travel further than inner ones
+        const sway = Math.sin(t) * p.float * 0.22 * (180 / p.radius);
+        const pos = project(p.radius, p.angle + sway, tilt, turn);
+        pos.y += Math.sin(t * 1.3) * 1.2;
+        planet.setAttribute(
+          'transform',
+          `translate(${pos.x.toFixed(2)} ${pos.y.toFixed(2)}) scale(${depthScale(pos.depth).toFixed(3)})`
+        );
+        node.style.left = `${(pos.x / VIEW.w) * 100}%`;
+        node.style.top = `${(pos.y / VIEW.h) * 100}%`;
+      }
+    };
+
+    const frame = (now: number) => {
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+      last = now;
+      // Drift pauses while a link is hovered or focused
+      if (!hovered) time += dt;
+      const ease = Math.min(1, dt * 2.5);
+      tilt += (target.tilt - tilt) * ease;
+      turn += (target.turn - turn) * ease;
+      draw();
+      raf = requestAnimationFrame(frame);
+    };
+
+    const start = () => {
+      if (raf || reduce.matches || !onScreen || document.hidden) return;
+      last = 0;
+      raf = requestAnimationFrame(frame);
+    };
+
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    // Lean the system a little towards the mouse
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = (e.clientY / window.innerHeight) * 2 - 1;
+        target = { tilt: BASE_TILT + y * 0.05, turn: BASE_TURN + x * 0.05 };
+      },
+      { passive: true }
+    );
+
+    // Highlight the planet and trail that belong to a link
+    const setActive = (key: string, on: boolean) => {
+      hovered = Math.max(0, hovered + (on ? 1 : -1));
+      const group = key === 'sun' ? sun : parts.find((x) => x.p.key === key)?.planet;
+      group?.classList.toggle('is-active', on);
+      const part = parts.find((x) => x.p.key === key);
+      part?.trail.classList.toggle('is-active', on);
+      part?.line.classList.toggle('is-active', on);
+    };
+
+    root.querySelectorAll<HTMLElement>('[data-node]').forEach((node) => {
+      const key = node.dataset.node!;
+      node.addEventListener('pointerenter', () => setActive(key, true));
+      node.addEventListener('pointerleave', () => setActive(key, false));
+      node.addEventListener('focus', () => setActive(key, true));
+      node.addEventListener('blur', () => setActive(key, false));
+    });
+
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      onScreen ? start() : stop();
+    }).observe(root);
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    reduce.addEventListener('change', () => (reduce.matches ? stop() : start()));
+
+    draw();
+    root.classList.add('is-ready');
+    start();
+  });
+</script>
+
+<style>
+  /* Wider than its column so the system feels large, capped by screen height */
+  .orbit {
+    position: relative;
+    flex: none;
+    width: min(118%, calc((100vh - 200px) * 900 / 560));
+    aspect-ratio: 900 / 560;
+  }
+
+  @media (max-width: 900px) {
+    .orbit {
+      width: 112%;
+    }
+  }
+
+  .orbit-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Full orbits: thin and faint, like a solar system chart */
+  .orbit-line {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.16;
+    stroke-width: 1;
+    transition: stroke var(--slow) var(--ease), stroke-opacity var(--slow) var(--ease);
+  }
+
+  .orbit-line.is-active {
+    stroke: var(--accent);
+    stroke-opacity: 0.4;
+  }
+
+  /* Trails: short arcs that fade in towards each planet */
+  .trail path {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    transition: stroke var(--slow) var(--ease);
+  }
+
+  .trail {
+    transition: opacity var(--slow) var(--ease);
+  }
+
+  .trail.is-active path {
+    stroke: var(--accent);
+  }
+
+  /* Centre: an engraved disc with ME inside */
+  .sun-body {
+    stroke: var(--text);
+    stroke-opacity: 0.75;
+    stroke-width: 1.2;
+    transition: stroke var(--fast) var(--ease), stroke-opacity var(--fast) var(--ease);
+  }
+
+  .sun-outer {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.22;
+    stroke-dasharray: 2 4;
+  }
+
+  .sun.is-active .sun-body {
+    stroke: var(--accent);
+    stroke-opacity: 1;
+  }
+
+  .sun-pulse {
+    fill: none;
+    stroke: var(--text);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 3.6s var(--ease) infinite;
+  }
+
+  @keyframes pulse {
+    from {
+      transform: scale(1);
+      stroke-opacity: 0.4;
+    }
+    to {
+      transform: scale(2.2);
+      stroke-opacity: 0;
+    }
+  }
+
+  .sun-halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform var(--slow) var(--ease);
+  }
+
+  .sun.is-active .sun-halo {
+    transform: scale(1.25);
+  }
+
+  /* Planets: small sparkle stars with a thin ring */
+  .planet-core,
+  .planet-star {
+    fill: var(--text);
+    transition: fill var(--fast) var(--ease);
+  }
+
+  .planet-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.35;
+    transition: stroke var(--fast) var(--ease), stroke-opacity var(--fast) var(--ease);
+  }
+
+  .planet.is-active .planet-star,
+  .planet.is-active .planet-core {
+    fill: var(--accent);
+  }
+
+  .planet-halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: breathe 5s ease-in-out infinite;
+    transition: transform var(--slow) var(--ease);
+  }
+
+  .planet:nth-of-type(2) .planet-halo { animation-delay: -1.2s; }
+  .planet:nth-of-type(3) .planet-halo { animation-delay: -2.5s; }
+  .planet:nth-of-type(4) .planet-halo { animation-delay: -3.7s; }
+
+  @keyframes breathe {
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .planet.is-active .planet-halo {
+    transform: scale(1.6);
+    animation-play-state: paused;
+  }
+
+  .planet.is-active .planet-ring {
+    stroke: var(--accent);
+    stroke-opacity: 1;
+  }
+
+  /* Links sit on top of the SVG, one per planet */
+  .links {
+    position: absolute;
+    inset: 0;
+  }
+
+  .node {
+    position: absolute;
+    width: 0;
+    height: 0;
+    color: #fcfaf5;
+  }
+
+  /* Hidden until the script has placed them */
+  .orbit:not(.is-ready) .node:not(.node-sun) {
+    visibility: hidden;
+  }
+
+  .node-sun {
+    left: 50%;
+    top: 50%;
+  }
+
+  .hit {
+    position: absolute;
+    left: -22px;
+    top: -22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+
+  .node-sun .hit {
+    left: -32px;
+    top: -32px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .label {
+    position: absolute;
+    top: -26px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+  }
+
+  .node[data-side='right'] .label {
+    left: 28px;
+  }
+
+  .node[data-side='left'] .label {
+    right: 28px;
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  /* Centre label sits right on the core */
+  .node-sun .label {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .node-sun .title {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    margin-right: -0.18em;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: color var(--fast) var(--ease);
+  }
+
+  .hint {
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: #cdc6b9;
+  }
+
+  /* Icon box with corner brackets */
+  .icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    color: #fcfaf5;
+    background:
+      linear-gradient(var(--accent-muted), var(--accent-muted)) top left / 8px 1px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) top left / 1px 8px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) top right / 8px 1px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) top right / 1px 8px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) bottom left / 8px 1px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) bottom left / 1px 8px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) bottom right / 8px 1px no-repeat,
+      linear-gradient(var(--accent-muted), var(--accent-muted)) bottom right / 1px 8px no-repeat;
+    transition: color var(--fast) var(--ease);
+  }
+
+  .icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .icon svg.filled {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* Hover and keyboard focus */
+  .node:hover .title,
+  .node:focus-visible .title,
+  .node:hover .icon,
+  .node:focus-visible .icon {
+    color: var(--accent);
+  }
+
+  .node:focus-visible {
+    outline: none;
+  }
+
+  .node:focus-visible .hit {
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Mid size screens: drop the icon boxes so labels stay clear of the name */
+  @media (max-width: 1360px) {
+    .icon {
+      display: none;
+    }
+  }
+
+  /* Smaller laptops: slightly smaller labels so everything still fits */
+  @media (max-width: 1200px) {
+    .title {
+      font-size: 15px;
+    }
+
+    .hint {
+      font-size: 13px;
+    }
+
+    .node-sun .title {
+      font-size: 16px;
+    }
+  }
+
+  /* Phones: titles only, centred under each planet */
+  @media (max-width: 640px) {
+    .node[data-side] .label {
+      left: 50%;
+      right: auto;
+      top: 16px;
+      transform: translateX(-50%);
+    }
+
+    .icon,
+    .hint {
+      display: none;
+    }
+
+    .title {
+      font-size: 13.5px;
+    }
+
+    .node-sun .title {
+      font-size: 14.5px;
+    }
+
+    /* GitHub sits close to the centre, so its label goes above the planet */
+    .node[data-node='github'] .label {
+      top: -36px;
+    }
+  }
+</style>
