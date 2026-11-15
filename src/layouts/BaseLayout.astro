@@ -37,8 +37,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#0c0e12" />
+    <!-- G_ icon: ICO for older browsers, SVG for modern ones, PNG for phone home screens -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Social previews -->
     <meta property="og:type" content="website" />
