@@ -1,0 +1,77 @@
+---
+// Shared page shell: head, background, nav, footer
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Backdrop from '../components/Backdrop.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+export type NavKey = 'home' | 'projects' | 'experience' | 'education' | 'about' | 'contact';
+
+interface Props {
+  title?: string;
+  description?: string;
+  active?: NavKey;
+}
+
+const {
+  title,
+  description = 'Gayath, Computer Science graduate based in Melbourne. Software projects, cloud and DevOps work.',
+  active,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | Gayath` : 'Gayath | Computer Science Graduate';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0c0e12" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Social previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body>
+    <Backdrop />
+    <div class="shell">
+      <SiteNav active={active} />
+      <main id="main" class="main">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Nav on top, content fills the middle, footer at the bottom */
+  .shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    padding-inline: var(--gutter);
+  }
+</style>
