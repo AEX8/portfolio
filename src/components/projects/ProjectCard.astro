@@ -1,0 +1,220 @@
+---
+// One project card: thumbnail, title, summary, tags and links
+import type { Project } from '../../data/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+// Initials for the placeholder thumbnail, e.g. "Smart Inventory" -> "SI"
+const initials = project.title
+  .split(/\s+/)
+  .slice(0, 2)
+  .map((w) => w[0])
+  .join('')
+  .toUpperCase();
+
+// A few stars placed from the slug, so each placeholder looks a little different
+let seed = [...project.slug].reduce((n, c) => n * 31 + c.charCodeAt(0), 7) % 4294967296;
+const rand = () => {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+};
+const stars = Array.from({ length: 14 }, () => ({
+  x: (rand() * 320).toFixed(1),
+  y: (rand() * 180).toFixed(1),
+  r: (0.6 + rand() * 1.1).toFixed(1),
+}));
+const tilt = (-20 + rand() * 40).toFixed(1);
+---
+
+<article class="card" id={project.slug}>
+  <div class="thumb">
+    {
+      project.image ? (
+        <img src={project.image} alt={`${project.title} preview`} loading="lazy" decoding="async" />
+      ) : (
+        <svg class="placeholder" viewBox="0 0 320 180" aria-hidden="true">
+          {stars.map((s) => <circle class="p-star" cx={s.x} cy={s.y} r={s.r} />)}
+          <ellipse class="p-orbit" cx="160" cy="90" rx="118" ry="34" transform={`rotate(${tilt} 160 90)`} />
+          <circle class="p-ring" cx="160" cy="90" r="30" />
+          <text class="p-initials" x="160" y="90">{initials}</text>
+        </svg>
+      )
+    }
+  </div>
+
+  <div class="body">
+    <h2 class="title">{project.title}</h2>
+    <p class="summary">{project.summary}</p>
+
+    {
+      project.tags.length > 0 && (
+        <ul class="tags">
+          {project.tags.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="links">
+      {
+        project.github && (
+          <a href={project.github} target="_blank" rel="noopener noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        )
+      }
+      {
+        project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer">
+            Live <span aria-hidden="true">↗</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        )
+      }
+      {!project.github && !project.live && <span class="soon">Links coming soon</span>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: rgba(14, 16, 21, 0.82);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    transition:
+      border-color var(--slow) var(--ease),
+      transform var(--slow) var(--ease);
+  }
+
+  .card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-3px);
+  }
+
+  /* Thumbnail: 16 by 9 */
+  .thumb {
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid var(--line);
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+    background: #0d0f14;
+  }
+
+  .thumb img,
+  .placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .p-star {
+    fill: var(--text);
+    opacity: 0.45;
+  }
+
+  .p-orbit,
+  .p-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-opacity: 0.22;
+  }
+
+  .p-ring {
+    stroke-opacity: 0.45;
+    transition: stroke var(--slow) var(--ease), stroke-opacity var(--slow) var(--ease);
+  }
+
+  .card:hover .p-ring {
+    stroke: var(--accent);
+    stroke-opacity: 0.9;
+  }
+
+  .p-initials {
+    fill: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    padding: 22px 24px 24px;
+  }
+
+  .title {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .summary {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #cdc6b9;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .tags li {
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Links sit at the bottom so cards in a row line up */
+  .links {
+    display: flex;
+    gap: 20px;
+    margin-top: auto;
+    padding-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .links a {
+    color: #fcfaf5;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 2px;
+    transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+  }
+
+  .links a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .soon {
+    color: var(--text-muted);
+  }
+</style>
