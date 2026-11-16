@@ -71,6 +71,8 @@ export const PROJECTS: Project[] = [
     summary:
       'A loan application backend modelled on Australian banking systems. Camunda runs the approval workflow with role based access for each user type.',
     tags: ['Java', 'Spring Boot', 'Camunda', 'PostgreSQL', 'Flyway'],
+    image: '/projects/loanflow.webp',
+    imageFit: 'cover',
     status: 'In progress',
   },
   {
@@ -90,6 +92,8 @@ export const PROJECTS: Project[] = [
       'A batch data pipeline that combines three sources into a tested warehouse, runs daily and powers a dashboard. Built on synthetic data.',
     tags: ['dbt', 'Airflow', 'PostgreSQL', 'FastAPI', 'React'],
     github: `${GH}/retail-analytics-pipeline`,
+    image: '/projects/retail-analytics-pipeline.webp',
+    imageFit: 'cover',
   },
   { slug: 'ml-pipeline', title: 'ML Pipeline', summary: TBC, tags: [] },
   {
