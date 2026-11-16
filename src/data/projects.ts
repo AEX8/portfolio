@@ -95,7 +95,14 @@ export const PROJECTS: Project[] = [
     image: '/projects/retail-analytics-pipeline.webp',
     imageFit: 'cover',
   },
-  { slug: 'ml-pipeline', title: 'ML Pipeline', summary: TBC, tags: [] },
+  {
+    slug: 'ml-pipeline',
+    title: 'ML Pipeline',
+    summary: TBC,
+    tags: [],
+    image: '/projects/ml-pipeline.webp',
+    imageFit: 'cover',
+  },
   {
     slug: 'team9-garage-boilerplate',
     title: 'Garage Boilerplate',
