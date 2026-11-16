@@ -9,6 +9,9 @@ export interface Project {
   github?: string; // repo link
   live?: string; // live demo link
   image?: string; // thumbnail path in /public, e.g. /projects/parsify.webp
+  // Logos sit inside the frame on a matching colour; full artwork fills it
+  imageFit?: 'cover' | 'contain';
+  imageBg?: 'white' | 'slate' | 'black';
   status?: 'In progress';
 }
 
@@ -24,6 +27,8 @@ export const PROJECTS: Project[] = [
     tags: ['AI', 'Firebase', 'Vercel'],
     github: `${GH}/IBM-AI-powered-consulting-game`,
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
+    image: '/projects/ibm-consulting-game.webp',
+    imageFit: 'cover',
   },
   {
     slug: 'parsify',
@@ -32,6 +37,9 @@ export const PROJECTS: Project[] = [
       'Upload any document, choose the fields you need and get clean JSON back. Claude handles the extraction. Full stack app deployed on AWS.',
     tags: ['React', 'TypeScript', 'FastAPI', 'PostgreSQL', 'Claude API', 'AWS'],
     github: `${GH}/parsify`,
+    image: '/projects/parsify.webp',
+    imageFit: 'contain',
+    imageBg: 'slate',
   },
   {
     slug: 'forge',
@@ -48,6 +56,9 @@ export const PROJECTS: Project[] = [
       'A warehouse platform for hospitality suppliers. Tracks stock and deliveries and uses machine learning to predict when products will run out.',
     tags: ['FastAPI', 'React', 'XGBoost', 'Redis', 'Celery', 'Kubernetes'],
     github: `${GH}/smart-inventory`,
+    image: '/projects/smart-inventory.webp',
+    imageFit: 'contain',
+    imageBg: 'white',
   },
   {
     slug: 'loanflow',
@@ -63,6 +74,9 @@ export const PROJECTS: Project[] = [
     summary: 'A real time data pipeline that turns simulated web traffic into live metrics on a dashboard.',
     tags: ['Kafka', 'Python', 'PostgreSQL', 'FastAPI', 'React'],
     github: `${GH}/clickstream-pipeline`,
+    image: '/projects/clickstream-pipeline.webp',
+    imageFit: 'contain',
+    imageBg: 'black',
   },
   {
     slug: 'retail-analytics-pipeline',
