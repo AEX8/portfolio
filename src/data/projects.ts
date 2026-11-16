@@ -97,9 +97,10 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'ml-pipeline',
-    title: 'ML Pipeline',
-    summary: TBC,
-    tags: [],
+    title: 'YouTube Views Prediction',
+    summary:
+      'A machine learning pipeline that predicts how many views a YouTube video gets per day from its length, age, likes and comments.',
+    tags: ['Python', 'scikit-learn', 'pandas', 'NumPy'],
     image: '/projects/ml-pipeline.webp',
     imageFit: 'cover',
   },

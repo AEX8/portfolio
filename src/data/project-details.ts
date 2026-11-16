@@ -185,6 +185,37 @@ export const PROJECT_DETAILS: Record<string, ProjectDetails> = {
       'Topics, partitions, consumer groups and offsets in practice, windowed aggregation and keeping consumers correct across crashes and restarts.',
   },
 
+  'ml-pipeline': {
+    overview: [
+      'A machine learning pipeline that takes YouTube video data and predicts the average number of views a video gets per day.',
+    ],
+    sections: [
+      {
+        title: 'How it works',
+        points: [
+          'Loads video data from a database',
+          'Cleans the data and converts video length into minutes',
+          'Works out views per day and engagement metrics',
+          'Log transforms the target so very popular videos do not skew the model',
+          'Trains and compares three models and saves the best one',
+        ],
+      },
+      {
+        title: 'Features',
+        points: ['Video length', 'Days since upload', 'Number of likes', 'Comment ratio'],
+      },
+      {
+        title: 'Models',
+        points: [
+          'Linear Regression, Random Forest and Gradient Boosting',
+          'Compared using MAE, RMSE and R²',
+          'Gradient Boosting is saved as the final model',
+        ],
+      },
+    ],
+    stack: ['Python', 'pandas', 'NumPy', 'scikit-learn', 'Matplotlib', 'joblib'],
+  },
+
   'retail-analytics-pipeline': {
     overview: [
       'A simulated online store keeps its data in three systems that do not talk to each other: a live database, a legacy system that exports daily CSV files and a shipping partner API. This pipeline joins them automatically so simple business questions get answered.',
