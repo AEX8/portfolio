@@ -14,7 +14,7 @@ const { project, hasDetails = false, index = 0 } = Astro.props;
 
 // Each card gets its shade on a different side, cycling so neighbours differ
 const sides = ['left', 'corner', 'right', 'bottom'];
-const side = sides[index % sides.length];
+const side = project.shade ?? sides[index % sides.length];
 ---
 
 <article
@@ -122,6 +122,21 @@ const side = sides[index % sides.length];
 
   .shade-corner :global(.c-thumb)::after {
     background: radial-gradient(ellipse 80% 90% at 0% 100%, rgba(6, 7, 10, 0.62), transparent 70%);
+  }
+
+  /* Very light shade at the top and bottom only */
+  .shade-edges :global(.c-thumb)::after {
+    background: linear-gradient(
+      180deg,
+      rgba(6, 7, 10, 0.18),
+      transparent 22%,
+      transparent 78%,
+      rgba(6, 7, 10, 0.18)
+    );
+  }
+
+  .shade-none :global(.c-thumb)::after {
+    display: none;
   }
 
   .card:hover :global(.c-thumb)::after {
