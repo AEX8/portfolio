@@ -48,6 +48,8 @@ export const PROJECTS: Project[] = [
       'A self hosted LLM gateway with an OpenAI compatible API. Adds API keys, rate limiting, prompt risk checks and usage tracking to a private Llama model.',
     tags: ['Python', 'FastAPI', 'Redis', 'PostgreSQL', 'Ollama', 'Docker'],
     github: `${GH}/forge`,
+    image: '/projects/forge.webp',
+    imageFit: 'cover',
   },
   {
     slug: 'smart-inventory',
