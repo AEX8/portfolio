@@ -12,6 +12,7 @@ export interface Project {
   // Logos sit inside the frame on a matching colour; full artwork fills it
   imageFit?: 'cover' | 'contain';
   imageBg?: 'white' | 'slate' | 'black';
+  imagePos?: 'top'; // crop from the top left instead of the centre
   // Optional override for the card's thumbnail shade (otherwise it alternates by position)
   shade?: 'left' | 'corner' | 'right' | 'bottom' | 'edges' | 'none';
   status?: 'In progress';
@@ -101,6 +102,7 @@ export const PROJECTS: Project[] = [
     summary:
       'A machine learning pipeline that predicts how many views a YouTube video gets per day from its length, age, likes and comments.',
     tags: ['Python', 'scikit-learn', 'pandas', 'NumPy'],
+    github: `${GH}/ml-youtube-pipeline`,
     image: '/projects/ml-pipeline.webp',
     imageFit: 'cover',
   },
@@ -110,6 +112,8 @@ export const PROJECTS: Project[] = [
     summary: TBC,
     tags: [],
     github: `${GH}/team9-garage-boilerplate`,
+    image: '/projects/team9-garage-boilerplate.webp',
+    imagePos: 'top',
   },
   {
     slug: 'team69-cloud-computing',
@@ -117,6 +121,8 @@ export const PROJECTS: Project[] = [
     summary: TBC,
     tags: [],
     github: `${GH}/Team69-cloud-computing`,
+    image: '/projects/team69-cloud-computing.webp',
+    imagePos: 'top',
   },
   {
     slug: 'kanbango',
@@ -125,6 +131,8 @@ export const PROJECTS: Project[] = [
       'A project and task management API in Go with a schema built for task dependencies, audit history and safe concurrent edits.',
     tags: ['Go', 'Gin', 'PostgreSQL', 'sqlc', 'Docker'],
     github: `${GH}/kanbango`,
+    image: '/projects/kanbango.webp',
+    imagePos: 'top',
     status: 'In progress',
   },
 ];
