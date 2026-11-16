@@ -1,9 +1,10 @@
 ---
 // Top bar: logo on the left, links on the right.
-// Home shows only About (the solar system is the menu there).
-// Every other page shows the solar system pages, so the two always match.
+// Home shows no links (the solar system is the menu there).
+// Every other page shows the site's pages, taken from the solar system plus Me.
+// GitHub stays on the homepage solar system only.
 import type { NavKey } from '../layouts/BaseLayout.astro';
-import { PLANETS, type PlanetKey } from '../lib/orbit';
+import { PLANETS } from '../lib/orbit';
 
 interface Props {
   active?: NavKey;
@@ -18,13 +19,18 @@ interface Link {
   external?: boolean;
 }
 
-const order: PlanetKey[] = ['projects', 'experience', 'education', 'contact', 'github'];
-const planetLinks: Link[] = order.map((key) => {
+// Me is the centre of the solar system, not a planet, so it is added here
+const me: Link = { key: 'me', label: 'Me', href: '/me' };
+
+// Labels and links come from the planets, so renaming a planet updates the nav too
+const planet = (key: string): Link => {
   const p = PLANETS.find((x) => x.key === key)!;
   return { key: p.key, label: p.label, href: p.href, external: p.external };
-});
+};
 
-const links: Link[] = active === 'home' ? [{ key: 'about', label: 'About', href: '/about' }] : planetLinks;
+const innerLinks: Link[] = [planet('projects'), planet('experience'), planet('education'), me, planet('contact')];
+
+const links: Link[] = active === 'home' ? [] : innerLinks;
 ---
 
 <header class="nav">
@@ -34,27 +40,29 @@ const links: Link[] = active === 'home' ? [{ key: 'about', label: 'About', href:
     G<span class="cursor" aria-hidden="true">_</span>
   </a>
 
-  <nav aria-label="Main">
-    <ul class="links">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              class="link"
-              href={link.href}
-              aria-current={active === link.key ? 'page' : undefined}
-              target={link.external ? '_blank' : undefined}
-              rel={link.external ? 'noopener noreferrer' : undefined}
-            >
-              {link.label}
-              {link.external && <span class="ext" aria-hidden="true">↗</span>}
-              {link.external && <span class="sr-only"> (opens in a new tab)</span>}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+  {
+    links.length > 0 && (
+      <nav aria-label="Main">
+        <ul class="links">
+          {links.map((link) => (
+            <li>
+              <a
+                class="link"
+                href={link.href}
+                aria-current={active === link.key ? 'page' : undefined}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noopener noreferrer' : undefined}
+              >
+                {link.label}
+                {link.external && <span class="ext" aria-hidden="true">↗</span>}
+                {link.external && <span class="sr-only"> (opens in a new tab)</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
 </header>
 
 <style>
