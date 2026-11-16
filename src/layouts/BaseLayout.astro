@@ -68,7 +68,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     display: grid;
     grid-template-rows: auto 1fr auto;
     min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100svh; /* steady height on phones while the address bar moves */
   }
 
   .main {
