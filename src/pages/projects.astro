@@ -16,7 +16,11 @@ import { PROJECT_DETAILS } from '../data/project-details';
     </header>
 
     <div class="grid">
-      {PROJECTS.map((project) => <ProjectCard project={project} hasDetails={Boolean(PROJECT_DETAILS[project.slug])} />)}
+      {
+        PROJECTS.map((project, i) => (
+          <ProjectCard project={project} index={i} hasDetails={Boolean(PROJECT_DETAILS[project.slug])} />
+        ))
+      }
     </div>
   </section>
 

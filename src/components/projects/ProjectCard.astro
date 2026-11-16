@@ -7,12 +7,21 @@ import ProjectThumb from './ProjectThumb.astro';
 interface Props {
   project: Project;
   hasDetails?: boolean;
+  index?: number;
 }
 
-const { project, hasDetails = false } = Astro.props;
+const { project, hasDetails = false, index = 0 } = Astro.props;
+
+// Each card gets its shade on a different side, cycling so neighbours differ
+const sides = ['left', 'corner', 'right', 'bottom'];
+const side = sides[index % sides.length];
 ---
 
-<article class:list={['card', { clickable: hasDetails }]} id={project.slug} data-card={project.slug}>
+<article
+  class:list={['card', `shade-${side}`, { clickable: hasDetails }]}
+  id={project.slug}
+  data-card={project.slug}
+>
   <ProjectThumb project={project} class="c-thumb" />
 
   <div class="body">
@@ -88,33 +97,40 @@ const { project, hasDetails = false } = Astro.props;
     border-radius: 15px 15px 0 0;
   }
 
-  /* Dark tone over real thumbnails so they sit in the night sky; it lifts on hover */
-  .card :global(.c-thumb img) {
-    filter: saturate(0.8);
-    transition:
-      transform var(--slow) var(--ease),
-      filter var(--slow) var(--ease);
-  }
-
+  /* A soft shade on one side of each thumbnail, fading out before the middle.
+     The side varies per card; the shade melts away on hover. */
   .card :global(.c-thumb.fit-cover)::after,
   .card :global(.c-thumb.fit-contain)::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(6, 7, 10, 0.45), rgba(6, 7, 10, 0.7));
     pointer-events: none;
     transition: opacity var(--slow) var(--ease);
   }
 
-  .card:hover :global(.c-thumb.fit-cover)::after,
-  .card:hover :global(.c-thumb.fit-contain)::after {
-    opacity: 0.25;
+  .shade-left :global(.c-thumb)::after {
+    background: linear-gradient(90deg, rgba(6, 7, 10, 0.6), transparent 55%);
   }
 
-  /* Gentle zoom and full colour on hover */
+  .shade-right :global(.c-thumb)::after {
+    background: linear-gradient(270deg, rgba(6, 7, 10, 0.6), transparent 55%);
+  }
+
+  .shade-bottom :global(.c-thumb)::after {
+    background: linear-gradient(0deg, rgba(6, 7, 10, 0.6), transparent 60%);
+  }
+
+  .shade-corner :global(.c-thumb)::after {
+    background: radial-gradient(ellipse 80% 90% at 0% 100%, rgba(6, 7, 10, 0.62), transparent 70%);
+  }
+
+  .card:hover :global(.c-thumb)::after {
+    opacity: 0;
+  }
+
+  /* Gentle zoom on hover */
   .card:hover :global(.c-thumb img) {
     transform: scale(1.03);
-    filter: saturate(1);
   }
 
   .card:hover :global(.p-ring) {
