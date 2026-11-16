@@ -31,7 +31,13 @@ const tilt = (-20 + rand() * 40).toFixed(1);
 ---
 
 <article class="card" id={project.slug}>
-  <div class="thumb">
+  <div
+    class:list={[
+      'thumb',
+      project.image && `fit-${project.imageFit ?? 'cover'}`,
+      project.imageBg && `bg-${project.imageBg}`,
+    ]}
+  >
     {
       project.image ? (
         <img src={project.image} alt={`${project.title} preview`} loading="lazy" decoding="async" />
@@ -117,6 +123,33 @@ const tilt = (-20 + rand() * 40).toFixed(1);
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Logos: shown whole, with breathing room, on their own background colour */
+  .fit-contain img {
+    object-fit: contain;
+    padding: 6% 10%;
+  }
+
+  .bg-white {
+    background: #fefefe;
+  }
+
+  .bg-slate {
+    background: #161c23;
+  }
+
+  .bg-black {
+    background: #040506;
+  }
+
+  /* Gentle zoom on hover for real thumbnails */
+  .thumb img {
+    transition: transform var(--slow) var(--ease);
+  }
+
+  .card:hover .thumb img {
+    transform: scale(1.03);
   }
 
   .p-star {
