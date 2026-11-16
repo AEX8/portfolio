@@ -83,13 +83,38 @@ const { project, hasDetails = false } = Astro.props;
   }
 
   .card :global(.c-thumb) {
+    position: relative;
     border-bottom: 1px solid var(--line);
     border-radius: 15px 15px 0 0;
   }
 
-  /* Gentle zoom and a lit ring on hover */
+  /* Dark tone over real thumbnails so they sit in the night sky; it lifts on hover */
+  .card :global(.c-thumb img) {
+    filter: saturate(0.8);
+    transition:
+      transform var(--slow) var(--ease),
+      filter var(--slow) var(--ease);
+  }
+
+  .card :global(.c-thumb.fit-cover)::after,
+  .card :global(.c-thumb.fit-contain)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 7, 10, 0.45), rgba(6, 7, 10, 0.7));
+    pointer-events: none;
+    transition: opacity var(--slow) var(--ease);
+  }
+
+  .card:hover :global(.c-thumb.fit-cover)::after,
+  .card:hover :global(.c-thumb.fit-contain)::after {
+    opacity: 0.25;
+  }
+
+  /* Gentle zoom and full colour on hover */
   .card:hover :global(.c-thumb img) {
     transform: scale(1.03);
+    filter: saturate(1);
   }
 
   .card:hover :global(.p-ring) {
