@@ -47,7 +47,10 @@ const tilt = (-20 + rand() * 40).toFixed(1);
   </div>
 
   <div class="body">
-    <h2 class="title">{project.title}</h2>
+    <div class="title-row">
+      <h2 class="title">{project.title}</h2>
+      {project.status && <span class="status">{project.status}</span>}
+    </div>
     <p class="summary">{project.summary}</p>
 
     {
@@ -163,6 +166,25 @@ const tilt = (-20 + rand() * 40).toFixed(1);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #fcfaf5;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  /* Small pill for unfinished projects */
+  .status {
+    padding: 2px 10px;
+    border: 1px solid var(--accent-muted);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
 
   .summary {
