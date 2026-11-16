@@ -28,7 +28,7 @@ const planet = (key: string): Link => {
   return { key: p.key, label: p.label, href: p.href, external: p.external };
 };
 
-const innerLinks: Link[] = [planet('projects'), planet('experience'), planet('education'), me, planet('contact')];
+const innerLinks: Link[] = [planet('projects'), planet('experience'), planet('education'), planet('contact'), me];
 
 const links: Link[] = active === 'home' ? [] : innerLinks;
 ---
