@@ -12,6 +12,8 @@ export interface Project {
   // Logos sit inside the frame on a matching colour; full artwork fills it
   imageFit?: 'cover' | 'contain';
   imageBg?: 'white' | 'slate' | 'black';
+  // Optional override for the card's thumbnail shade (otherwise it alternates by position)
+  shade?: 'left' | 'corner' | 'right' | 'bottom' | 'edges' | 'none';
   status?: 'In progress';
 }
 
@@ -29,6 +31,7 @@ export const PROJECTS: Project[] = [
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
     image: '/projects/ibm-consulting-game.webp',
     imageFit: 'cover',
+    shade: 'edges',
   },
   {
     slug: 'parsify',
@@ -48,6 +51,8 @@ export const PROJECTS: Project[] = [
       'A self hosted LLM gateway with an OpenAI compatible API. Adds API keys, rate limiting, prompt risk checks and usage tracking to a private Llama model.',
     tags: ['Python', 'FastAPI', 'Redis', 'PostgreSQL', 'Ollama', 'Docker'],
     github: `${GH}/forge`,
+    image: '/projects/forge.webp',
+    imageFit: 'cover',
   },
   {
     slug: 'smart-inventory',
