@@ -34,7 +34,7 @@ export const ROLES: Role[] = [
       'Owned all communication with the IBM client and every project management duty for the team.',
       'Contributed as a developer alongside managing the project.',
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
-      'Led the team through an industry showcase event organised with RMIT, Telstra, NBN and the Grand Prix.',
+      'Led the team through an industry showcase event organised with IBM, RMIT, Telstra, NBN and the Grand Prix.',
     ],
     tags: ['Project management', 'Client communication', 'AI', 'Firebase', 'Vercel'],
     project: 'ibm-consulting-game',

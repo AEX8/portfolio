@@ -1,0 +1,235 @@
+---
+// Full write up for one project, kept in a <template> until its pop-up opens
+import type { Project } from '../../data/projects';
+import type { ProjectDetails } from '../../data/project-details';
+import ProjectThumb from './ProjectThumb.astro';
+
+interface Props {
+  project: Project;
+  details: ProjectDetails;
+}
+
+const { project, details } = Astro.props;
+const titleId = `detail-title-${project.slug}`;
+---
+
+<template id={`detail-${project.slug}`} data-title-id={titleId}>
+  <article class="detail">
+    <ProjectThumb project={project} class="d-media" eager />
+
+    <div class="d-body">
+      <header class="d-head">
+        <div class="d-title-row">
+          <h2 class="d-title" id={titleId}>{project.title}</h2>
+          {project.status && <span class="d-status">{project.status}</span>}
+        </div>
+
+        {
+          (project.github || project.live) && (
+            <div class="d-links">
+              {project.github && (
+                <a href={project.github} target="_blank" rel="noopener noreferrer">
+                  GitHub <span aria-hidden="true">↗</span>
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              )}
+              {project.live && (
+                <a href={project.live} target="_blank" rel="noopener noreferrer">
+                  Live demo <span aria-hidden="true">↗</span>
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              )}
+            </div>
+          )
+        }
+      </header>
+
+      <div class="d-overview">
+        {details.overview.map((p) => <p>{p}</p>)}
+      </div>
+
+      {details.note && <p class="d-note">{details.note}</p>}
+
+      {
+        details.sections.map((s) => (
+          <section class="d-section">
+            <h3 class="d-h3">{s.title}</h3>
+            <ul class="d-points">
+              {s.points.map((pt) => (
+                <li>{pt}</li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+
+      {
+        details.learned && (
+          <section class="d-section">
+            <h3 class="d-h3">What I learned</h3>
+            <p class="d-text">{details.learned}</p>
+          </section>
+        )
+      }
+
+      <section class="d-section">
+        <h3 class="d-h3">Stack</h3>
+        <ul class="d-tags">
+          {details.stack.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  </article>
+</template>
+
+<style>
+  .detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* A wider, shorter banner than the card, so more of the write up shows */
+  .detail :global(.d-media) {
+    aspect-ratio: 16 / 7;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .d-body {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: clamp(22px, 4vw, 36px);
+  }
+
+  .d-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+  }
+
+  .d-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+  }
+
+  .d-title {
+    font-family: var(--font-mono);
+    font-size: clamp(20px, 2.4vw, 26px);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+  }
+
+  .d-status {
+    padding: 2px 10px;
+    border: 1px solid var(--accent-muted);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .d-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .d-links a {
+    padding: 7px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  .d-links a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .d-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #e6dfd2;
+  }
+
+  .d-note {
+    padding: 12px 16px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #cdc6b9;
+  }
+
+  .d-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .d-h3 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .d-points {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 18px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e6dfd2;
+  }
+
+  .d-points li::marker {
+    color: var(--text-muted);
+  }
+
+  .d-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e6dfd2;
+  }
+
+  .d-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .d-tags li {
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #cdc6b9;
+  }
+</style>

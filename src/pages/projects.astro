@@ -1,8 +1,11 @@
 ---
-// Projects: a short header, then project cards two to a row
+// Projects: a short header, then project cards two to a row.
+// Clicking a card with a write up expands it into a pop-up.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/projects/ProjectCard.astro';
+import ProjectDetail from '../components/projects/ProjectDetail.astro';
 import { PROJECTS } from '../data/projects';
+import { PROJECT_DETAILS } from '../data/project-details';
 ---
 
 <BaseLayout title="Projects" active="projects" description="Software, data and cloud projects by Gayath.">
@@ -14,10 +17,177 @@ import { PROJECTS } from '../data/projects';
     </header>
 
     <div class="grid">
-      {PROJECTS.map((project) => <ProjectCard project={project} />)}
+      {PROJECTS.map((project) => <ProjectCard project={project} hasDetails={Boolean(PROJECT_DETAILS[project.slug])} />)}
     </div>
   </section>
+
+  <!-- Write ups, cloned into the pop-up when a card is opened -->
+  {
+    PROJECTS.filter((p) => PROJECT_DETAILS[p.slug]).map((p) => (
+      <ProjectDetail project={p} details={PROJECT_DETAILS[p.slug]} />
+    ))
+  }
+
+  <!-- The pop-up -->
+  <dialog class="modal" data-modal>
+    <div class="frame" data-frame>
+      <button class="close" type="button" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+      <div class="scroll" data-scroll>
+        <div data-modal-body></div>
+      </div>
+    </div>
+  </dialog>
 </BaseLayout>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-modal]')!;
+  const frame = dialog.querySelector<HTMLElement>('[data-frame]')!;
+  const scroller = dialog.querySelector<HTMLElement>('[data-scroll]')!;
+  const body = dialog.querySelector<HTMLElement>('[data-modal-body]')!;
+  const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-close]')!;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
+  const EASE_IN = 'cubic-bezier(0.4, 0, 0.2, 1)';
+
+  let current: { card: HTMLElement | null; trigger: HTMLElement | null } | null = null;
+  let busy = false;
+
+  // Transform that makes the panel sit exactly over the card
+  const fromCard = (card: DOMRect, panel: DOMRect) => {
+    const dx = card.left + card.width / 2 - (panel.left + panel.width / 2);
+    const dy = card.top + card.height / 2 - (panel.top + panel.height / 2);
+    return `translate(${dx}px, ${dy}px) scale(${card.width / panel.width}, ${card.height / panel.height})`;
+  };
+
+  // Stop the page scrolling behind the pop-up, without a layout jump
+  const lockScroll = (on: boolean) => {
+    const root = document.documentElement;
+    if (on) {
+      const gap = window.innerWidth - root.clientWidth;
+      root.style.paddingRight = gap > 0 ? `${gap}px` : '';
+      root.classList.add('modal-open');
+    } else {
+      root.classList.remove('modal-open');
+      root.style.paddingRight = '';
+    }
+  };
+
+  // Clear finished animations so the next open starts clean
+  const resetAnimations = () => {
+    for (const el of [frame, body]) el.getAnimations().forEach((a) => a.cancel());
+    dialog.getAnimations({ subtree: false }).forEach((a) => a.cancel());
+  };
+
+  const fadeBackdrop = (from: number, to: number, duration: number) => {
+    try {
+      dialog.animate([{ opacity: from }, { opacity: to }], {
+        duration,
+        pseudoElement: '::backdrop',
+        fill: 'forwards',
+      });
+    } catch {
+      // Older browsers: the backdrop simply appears
+    }
+  };
+
+  const open = (slug: string, trigger: HTMLElement | null) => {
+    if (busy || dialog.open) return;
+    const tpl = document.getElementById(`detail-${slug}`) as HTMLTemplateElement | null;
+    if (!tpl) return;
+    const card = document.querySelector<HTMLElement>(`[data-card="${slug}"]`);
+
+    resetAnimations();
+    body.replaceChildren(tpl.content.cloneNode(true));
+    dialog.setAttribute('aria-labelledby', tpl.dataset.titleId ?? '');
+    lockScroll(true);
+    dialog.showModal();
+    scroller.scrollTop = 0;
+    current = { card, trigger };
+    history.replaceState(null, '', `#${slug}`);
+
+    if (reduce.matches || !card) {
+      frame.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180 });
+      return;
+    }
+
+    busy = true;
+    const start = fromCard(card.getBoundingClientRect(), frame.getBoundingClientRect());
+    card.style.visibility = 'hidden';
+    fadeBackdrop(0, 1, 320);
+    body.animate([{ opacity: 0 }, { opacity: 0, offset: 0.4 }, { opacity: 1 }], { duration: 560, easing: 'ease-out' });
+    const anim = frame.animate(
+      [
+        { transform: start, borderRadius: '16px' },
+        { transform: 'none', borderRadius: '20px' },
+      ],
+      { duration: 560, easing: EASE_OUT }
+    );
+    anim.onfinish = () => (busy = false);
+  };
+
+  const close = () => {
+    if (busy || !dialog.open || !current) return;
+    const { card, trigger } = current;
+
+    const finish = () => {
+      dialog.close();
+      resetAnimations();
+      body.replaceChildren();
+      lockScroll(false);
+      if (card) card.style.visibility = '';
+      trigger?.focus({ preventScroll: true });
+      history.replaceState(null, '', location.pathname + location.search);
+      current = null;
+      busy = false;
+    };
+
+    busy = true;
+    if (reduce.matches || !card) {
+      frame.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }).onfinish = finish;
+      return;
+    }
+
+    const end = fromCard(card.getBoundingClientRect(), frame.getBoundingClientRect());
+    fadeBackdrop(1, 0, 380);
+    body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
+    frame.animate(
+      [
+        { transform: 'none', borderRadius: '20px' },
+        { transform: end, borderRadius: '16px' },
+      ],
+      { duration: 420, easing: EASE_IN, fill: 'forwards' }
+    ).onfinish = finish;
+  };
+
+  // Open from any card
+  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
+    btn.addEventListener('click', () => open(btn.dataset.open!, btn));
+  });
+
+  // Close with the button, a click outside the panel, or Esc
+  closeBtn.addEventListener('click', close);
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) close();
+  });
+  dialog.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    close();
+  });
+
+  // Links like /projects#parsify open that project straight away
+  const openFromHash = () => {
+    const slug = decodeURIComponent(location.hash.slice(1));
+    if (!slug || dialog.open || !document.getElementById(`detail-${slug}`)) return;
+    const card = document.querySelector<HTMLElement>(`[data-card="${slug}"]`);
+    card?.scrollIntoView({ block: 'center' });
+    requestAnimationFrame(() => open(slug, card?.querySelector<HTMLElement>('[data-open]') ?? null));
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+</script>
 
 <style>
   .page {
@@ -66,5 +236,87 @@ import { PROJECTS } from '../data/projects';
     .grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* No page scrolling behind the pop-up */
+  :global(html.modal-open) {
+    overflow: hidden;
+  }
+
+  /* Full screen layer that centres the panel */
+  .modal {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: clamp(12px, 3vw, 32px);
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .modal[open] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal::backdrop {
+    background: rgba(6, 7, 10, 0.78);
+    backdrop-filter: blur(4px);
+  }
+
+  .frame {
+    position: relative;
+    width: min(880px, 100%);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #101318;
+    border: 1px solid var(--line-strong);
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  .scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  .close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: rgba(10, 12, 16, 0.78);
+    color: #fcfaf5;
+    cursor: pointer;
+    transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  .close:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .close svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
   }
 </style>
