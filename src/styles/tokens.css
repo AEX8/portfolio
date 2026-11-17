@@ -1,16 +1,16 @@
 /* Design tokens: ink, bone and indigo, like a star chart printed on night paper */
 :root {
   /* Colours */
-  --bg: #0a0b0f;
+  --bg: #0c0d12;
   --bg-2: #14171d;
   --accent: #8aa6c8; /* light indigo, readable on ink */
   --accent-muted: #4d6788; /* deep indigo ink */
   --text: #e6dfd2; /* bone */
-  --text-muted: #8a8478; /* warm grey */
+  --text-muted: #948e82; /* warm grey */
 
   /* Lines and glows */
-  --line: rgba(230, 223, 210, 0.12);
-  --line-strong: rgba(230, 223, 210, 0.28);
+  --line: rgba(230, 223, 210, 0.13);
+  --line-strong: rgba(230, 223, 210, 0.3);
   --accent-soft: rgba(138, 166, 200, 0.12);
   --accent-glow: rgba(138, 166, 200, 0.35);
 
@@ -30,4 +30,14 @@
   --slow: 420ms;
 
   color-scheme: dark;
+}
+
+/* Phones: screens look darker in the hand, so lift the background, muted text and lines a little */
+@media (max-width: 640px) {
+  :root {
+    --bg: #0e1015;
+    --text-muted: #a39d91;
+    --line: rgba(230, 223, 210, 0.16);
+    --line-strong: rgba(230, 223, 210, 0.34);
+  }
 }

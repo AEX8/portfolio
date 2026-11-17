@@ -33,11 +33,6 @@ export const MILESTONES: Milestone[] = [
     details: [],
     logo: 'csit',
   },
-  {
-    title: 'Certifications',
-    org: 'Coming soon',
-    details: [],
-  },
 ];
 
 // Coursework, grouped by skill
