@@ -8,6 +8,7 @@ export interface Role {
   start: string; // e.g. "Mar 2024"
   end: string; // e.g. "Present"
   bullets: string[];
+  logo?: string; // name in /public/logos, e.g. "ibm" uses ibm.webp
   project?: string; // slug from src/data/projects.ts, shows a "View project" link
 }
 
@@ -15,6 +16,7 @@ export interface SmallItem {
   title: string;
   org: string;
   period?: string;
+  logo?: string;
 }
 
 // Path to the CV in /public, e.g. "/cv/gayath-cv.pdf". Leave empty to hide the download.
@@ -35,6 +37,7 @@ export const ROLES: Role[] = [
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
       'Led the team through an industry showcase event organised with IBM, RMIT, Telstra, NBN and the Grand Prix.',
     ],
+    logo: 'ibm',
     project: 'ibm-consulting-game',
   },
   {
@@ -45,10 +48,11 @@ export const ROLES: Role[] = [
     start: 'Jul 2025',
     end: 'Present',
     bullets: [],
+    logo: 'rmit',
   },
 ];
 
 // Non tech roles, one line each
 export const OTHER_ROLES: SmallItem[] = [
-  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality' },
+  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality', logo: 'cedar' },
 ];

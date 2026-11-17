@@ -1,6 +1,7 @@
 ---
 // Experience: a "mission log" of roles, then other roles
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CompanyLogo from '../components/CompanyLogo.astro';
 import { CV_PATH, OTHER_ROLES, ROLES } from '../data/experience';
 import { PROJECTS } from '../data/projects';
 
@@ -49,14 +50,19 @@ const star = (s: number) => {
               </svg>
             </span>
             <div class="panel role">
-              <div class="role-head">
-                <h2 class="r-title">{r.title}</h2>
-                {r.type && <span class="type">{r.type}</span>}
+              <div class="role-top">
+                {r.logo && <CompanyLogo name={r.logo} alt={`${r.company} logo`} />}
+                <div>
+                  <div class="role-head">
+                    <h2 class="r-title">{r.title}</h2>
+                    {r.type && <span class="type">{r.type}</span>}
+                  </div>
+                  <p class="company">
+                    {r.company}
+                    {r.location && <span class="loc"> · {r.location}</span>}
+                  </p>
+                </div>
               </div>
-              <p class="company">
-                {r.company}
-                {r.location && <span class="loc"> · {r.location}</span>}
-              </p>
               {r.bullets.length > 0 && (
                 <ul class="bullets">
                   {r.bullets.map((b) => (
@@ -86,10 +92,13 @@ const star = (s: number) => {
               <ul class="small-list">
                 {OTHER_ROLES.map((o) => (
                   <li>
-                    <span class="s-title">{o.title}</span>
-                    <span class="s-meta">
-                      {o.org}
-                      {o.period && ` · ${o.period}`}
+                    {o.logo && <CompanyLogo name={o.logo} alt={`${o.org} logo`} size="sm" />}
+                    <span class="s-text">
+                      <span class="s-title">{o.title}</span>
+                      <span class="s-meta">
+                        {o.org}
+                        {o.period && ` · ${o.period}`}
+                      </span>
                     </span>
                   </li>
                 ))}
@@ -254,6 +263,13 @@ const star = (s: number) => {
     padding: 22px 26px;
   }
 
+  /* Logo tile beside the title and company */
+  .role-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
   .role-head {
     display: flex;
     align-items: center;
@@ -354,6 +370,12 @@ const star = (s: number) => {
   }
 
   .small-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .s-text {
     display: flex;
     flex-direction: column;
     gap: 2px;
