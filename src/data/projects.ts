@@ -27,7 +27,7 @@ export const PROJECTS: Project[] = [
     title: 'IBM AI Consulting Game',
     summary:
       'An AI powered 2D RPG style simulation game that trains junior and graduate consultants. Capstone project with IBM.',
-    tags: ['AI', 'Firebase', 'Vercel'],
+    tags: ['Next.js', 'TypeScript', 'Phaser', 'Firebase', 'Groq', 'Vercel'],
     github: `${GH}/IBM-AI-powered-consulting-game`,
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
     image: '/projects/ibm-consulting-game.webp',
