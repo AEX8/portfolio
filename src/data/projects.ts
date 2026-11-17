@@ -12,6 +12,7 @@ export interface Project {
   // Logos sit inside the frame on a matching colour; full artwork fills it
   imageFit?: 'cover' | 'contain';
   imageBg?: 'white' | 'slate' | 'black';
+  imagePos?: 'top'; // crop from the top left instead of the centre
   // Optional override for the card's thumbnail shade (otherwise it alternates by position)
   shade?: 'left' | 'corner' | 'right' | 'bottom' | 'edges' | 'none';
   status?: 'In progress';
@@ -31,6 +32,7 @@ export const PROJECTS: Project[] = [
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
     image: '/projects/ibm-consulting-game.webp',
     imageFit: 'cover',
+    imagePos: 'top',
     shade: 'edges',
   },
   {
@@ -62,8 +64,8 @@ export const PROJECTS: Project[] = [
     tags: ['FastAPI', 'React', 'XGBoost', 'Redis', 'Celery', 'Kubernetes'],
     github: `${GH}/smart-inventory`,
     image: '/projects/smart-inventory.webp',
-    imageFit: 'contain',
-    imageBg: 'white',
+    imageFit: 'cover',
+    imagePos: 'top',
   },
   {
     slug: 'loanflow',
@@ -71,6 +73,8 @@ export const PROJECTS: Project[] = [
     summary:
       'A loan application backend modelled on Australian banking systems. Camunda runs the approval workflow with role based access for each user type.',
     tags: ['Java', 'Spring Boot', 'Camunda', 'PostgreSQL', 'Flyway'],
+    image: '/projects/loanflow.webp',
+    imageFit: 'cover',
     status: 'In progress',
   },
   {
@@ -90,14 +94,27 @@ export const PROJECTS: Project[] = [
       'A batch data pipeline that combines three sources into a tested warehouse, runs daily and powers a dashboard. Built on synthetic data.',
     tags: ['dbt', 'Airflow', 'PostgreSQL', 'FastAPI', 'React'],
     github: `${GH}/retail-analytics-pipeline`,
+    image: '/projects/retail-analytics-pipeline.webp',
+    imageFit: 'cover',
   },
-  { slug: 'ml-pipeline', title: 'ML Pipeline', summary: TBC, tags: [] },
+  {
+    slug: 'ml-pipeline',
+    title: 'YouTube Views Prediction',
+    summary:
+      'A machine learning pipeline that predicts how many views a YouTube video gets per day from its length, age, likes and comments.',
+    tags: ['Python', 'scikit-learn', 'pandas', 'NumPy'],
+    github: `${GH}/ml-youtube-pipeline`,
+    image: '/projects/ml-pipeline.webp',
+    imageFit: 'cover',
+  },
   {
     slug: 'team9-garage-boilerplate',
     title: 'Garage Boilerplate',
     summary: TBC,
     tags: [],
     github: `${GH}/team9-garage-boilerplate`,
+    image: '/projects/team9-garage-boilerplate.webp',
+    imagePos: 'top',
   },
   {
     slug: 'team69-cloud-computing',
@@ -105,6 +122,8 @@ export const PROJECTS: Project[] = [
     summary: TBC,
     tags: [],
     github: `${GH}/Team69-cloud-computing`,
+    image: '/projects/team69-cloud-computing.webp',
+    imagePos: 'top',
   },
   {
     slug: 'kanbango',
@@ -113,6 +132,8 @@ export const PROJECTS: Project[] = [
       'A project and task management API in Go with a schema built for task dependencies, audit history and safe concurrent edits.',
     tags: ['Go', 'Gin', 'PostgreSQL', 'sqlc', 'Docker'],
     github: `${GH}/kanbango`,
+    image: '/projects/kanbango.webp',
+    imagePos: 'top',
     status: 'In progress',
   },
 ];
