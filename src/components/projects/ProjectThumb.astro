@@ -38,6 +38,7 @@ const tilt = (-20 + rand() * 40).toFixed(1);
     'thumb',
     project.image && `fit-${project.imageFit ?? 'cover'}`,
     project.imageBg && `bg-${project.imageBg}`,
+    project.imagePos && `pos-${project.imagePos}`,
     className,
   ]}
 >
@@ -81,6 +82,11 @@ const tilt = (-20 + rand() * 40).toFixed(1);
   .fit-contain img {
     object-fit: contain;
     padding: 6% 10%;
+  }
+
+  /* Code screenshots: keep the top left corner in view when cropped */
+  .pos-top img {
+    object-position: left top;
   }
 
   .bg-white {

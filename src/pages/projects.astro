@@ -148,20 +148,36 @@ import { PROJECT_DETAILS } from '../data/project-details';
     };
 
     busy = true;
-    if (reduce.matches || !card) {
-      frame.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }).onfinish = finish;
+    const rect = card?.getBoundingClientRect();
+    const onScreen = rect && rect.bottom > 40 && rect.top < window.innerHeight - 40;
+
+    // Show the card again under the fading backdrop, so the panel lands on it
+    if (card) card.style.visibility = '';
+
+    // Card off screen or reduced motion: shrink a touch and fade in place
+    if (reduce.matches || !rect || !onScreen) {
+      fadeBackdrop(1, 0, 240);
+      frame.animate(
+        [
+          { opacity: 1, transform: 'none' },
+          { opacity: 0, transform: reduce.matches ? 'none' : 'scale(0.96)' },
+        ],
+        { duration: 240, easing: EASE_IN, fill: 'forwards' }
+      ).onfinish = finish;
       return;
     }
 
-    const end = fromCard(card.getBoundingClientRect(), frame.getBoundingClientRect());
-    fadeBackdrop(1, 0, 380);
-    body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
+    // Shrink back toward the card and fade out on the way, so there is no hard swap at the end
+    const end = fromCard(rect, frame.getBoundingClientRect());
+    fadeBackdrop(1, 0, 360);
+    body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' });
     frame.animate(
       [
-        { transform: 'none', borderRadius: '20px' },
-        { transform: end, borderRadius: '16px' },
+        { transform: 'none', borderRadius: '20px', opacity: 1 },
+        { opacity: 1, offset: 0.45 },
+        { transform: end, borderRadius: '16px', opacity: 0 },
       ],
-      { duration: 420, easing: EASE_IN, fill: 'forwards' }
+      { duration: 380, easing: EASE_IN, fill: 'forwards' }
     ).onfinish = finish;
   };
 
@@ -266,8 +282,15 @@ import { PROJECT_DETAILS } from '../data/project-details';
   }
 
   .modal::backdrop {
-    background: rgba(6, 7, 10, 0.78);
-    backdrop-filter: blur(4px);
+    background: rgba(6, 7, 10, 0.8);
+  }
+
+  /* Blur only on desktop; animating it stutters on phones */
+  @media (hover: hover) and (pointer: fine) {
+    .modal::backdrop {
+      background: rgba(6, 7, 10, 0.78);
+      backdrop-filter: blur(4px);
+    }
   }
 
   .frame {
