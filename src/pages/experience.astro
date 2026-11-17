@@ -1,7 +1,7 @@
 ---
-// Experience: a "mission log" of roles, then other roles and community work
+// Experience: a "mission log" of roles, then other roles
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { COMMUNITY, CV_PATH, OTHER_ROLES, ROLES } from '../data/experience';
+import { CV_PATH, OTHER_ROLES, ROLES } from '../data/experience';
 import { PROJECTS } from '../data/projects';
 
 // Title of a linked project, if the role has one
@@ -64,13 +64,6 @@ const star = (s: number) => {
                   ))}
                 </ul>
               )}
-              {r.tags.length > 0 && (
-                <ul class="tags">
-                  {r.tags.map((t) => (
-                    <li>{t}</li>
-                  ))}
-                </ul>
-              )}
               {r.project && projectTitle(r.project) && (
                 <a class="project-link" href={`/projects#${r.project}`}>
                   View project <span aria-hidden="true">→</span>
@@ -83,7 +76,7 @@ const star = (s: number) => {
       }
     </ol>
 
-    <!-- Other roles and community, side by side -->
+    <!-- Other roles, lined up with the role panels above -->
     <div class="extras">
       <section class="block" aria-labelledby="other-roles">
         <h2 class="block-title" id="other-roles">Other experience</h2>
@@ -97,29 +90,6 @@ const star = (s: number) => {
                     <span class="s-meta">
                       {o.org}
                       {o.period && ` · ${o.period}`}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p class="soon">Coming soon</p>
-            )
-          }
-        </div>
-      </section>
-
-      <section class="block" aria-labelledby="community">
-        <h2 class="block-title" id="community">Leadership and community</h2>
-        <div class="panel list-panel">
-          {
-            COMMUNITY.length > 0 ? (
-              <ul class="small-list">
-                {COMMUNITY.map((c) => (
-                  <li>
-                    <span class="s-title">{c.title}</span>
-                    <span class="s-meta">
-                      {c.org}
-                      {c.period && ` · ${c.period}`}
                     </span>
                   </li>
                 ))}
@@ -337,26 +307,6 @@ const star = (s: number) => {
     color: var(--text-muted);
   }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
-    list-style: none;
-    padding: 0;
-  }
-
-  .tags li {
-    padding: 3px 10px;
-    border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
   /* Link through to the matching project card */
   .project-link {
     display: inline-block;
@@ -376,11 +326,9 @@ const star = (s: number) => {
     border-color: var(--accent);
   }
 
-  /* Extras: two columns of compact lists */
+  /* Extras: starts where the role panels start */
   .extras {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+    padding-left: 196px;
   }
 
   .block-title {
@@ -432,7 +380,7 @@ const star = (s: number) => {
     color: var(--text-muted);
   }
 
-  /* Smaller screens: dates sit above each panel, one column for extras */
+  /* Smaller screens: dates sit above each panel, extras full width */
   @media (max-width: 720px) {
     .log::before,
     .marker {
@@ -457,7 +405,7 @@ const star = (s: number) => {
     }
 
     .extras {
-      grid-template-columns: 1fr;
+      padding-left: 0;
     }
   }
 </style>

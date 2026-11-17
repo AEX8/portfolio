@@ -8,7 +8,6 @@ export interface Role {
   start: string; // e.g. "Mar 2024"
   end: string; // e.g. "Present"
   bullets: string[];
-  tags: string[];
   project?: string; // slug from src/data/projects.ts, shows a "View project" link
 }
 
@@ -36,23 +35,20 @@ export const ROLES: Role[] = [
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
       'Led the team through an industry showcase event organised with IBM, RMIT, Telstra, NBN and the Grand Prix.',
     ],
-    tags: ['Project management', 'Client communication', 'AI', 'Firebase', 'Vercel'],
     project: 'ibm-consulting-game',
   },
   {
-    title: 'Role title',
-    company: 'Company name',
+    title: 'Student Mentor',
+    company: 'RMIT University',
     location: 'Melbourne',
-    type: 'Part time',
-    start: 'Month 20XX',
-    end: 'Month 20XX',
-    bullets: ['Details coming soon.'],
-    tags: [],
+    type: 'Volunteer',
+    start: 'Jul 2025',
+    end: 'Present',
+    bullets: [],
   },
 ];
 
 // Non tech roles, one line each
-export const OTHER_ROLES: SmallItem[] = [];
-
-// Hackathons, clubs, mentoring, volunteering
-export const COMMUNITY: SmallItem[] = [];
+export const OTHER_ROLES: SmallItem[] = [
+  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality' },
+];
