@@ -63,8 +63,8 @@ export const PROJECTS: Project[] = [
     tags: ['FastAPI', 'React', 'XGBoost', 'Redis', 'Celery', 'Kubernetes'],
     github: `${GH}/smart-inventory`,
     image: '/projects/smart-inventory.webp',
-    imageFit: 'contain',
-    imageBg: 'white',
+    imageFit: 'cover',
+    imagePos: 'top',
   },
   {
     slug: 'loanflow',
