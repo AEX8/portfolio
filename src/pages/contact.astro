@@ -83,7 +83,7 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
           </span>
           <h2 class="label">Discord</h2>
         </div>
-        <p class="value discord">{DISCORD.username || 'Coming soon'}</p>
+        <p class="value discord">{DISCORD.username || (DISCORD.userId ? 'Message me on Discord' : 'Coming soon')}</p>
         <div class="actions">
           {
             DISCORD.username ? (
@@ -91,7 +91,7 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
                 <span data-copy-label>Copy</span>
               </button>
             ) : (
-              <span class="action action-soon">Coming soon</span>
+              !DISCORD.userId && <span class="action action-soon">Coming soon</span>
             )
           }
           {

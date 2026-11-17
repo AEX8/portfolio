@@ -18,7 +18,7 @@ export const GITHUB = {
 // Discord username, and the numeric user ID for the profile link (both optional until filled in)
 export const DISCORD = {
   username: '',
-  userId: '',
+  userId: '879561870024003604',
 };
 
 // Temporary wording, to be replaced
