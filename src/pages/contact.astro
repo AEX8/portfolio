@@ -106,20 +106,17 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
     </div>
 
     <!-- Live local time in Melbourne -->
-    <div class="clock" data-clock data-tz={TIME_ZONE}>
-      <p class="clock-label">Local time · {LOCATION}</p>
-      <p class="clock-face" aria-hidden="true">
+    <p class="clock" data-clock data-tz={TIME_ZONE}>
+      <span>{LOCATION}</span>
+      <span class="clock-face" aria-hidden="true">
         <span data-hh>--</span><span class="colon">:</span><span data-mm>--</span><span class="colon">:</span><span
-          class="sec"
           data-ss>--</span
         >
-      </p>
-      <p class="sr-only" data-clock-text>Melbourne time</p>
-      <p class="clock-meta">
         <span data-zone>AEST</span>
-        <span data-diff></span>
-      </p>
-    </div>
+      </span>
+      <span class="sr-only" data-clock-text>Melbourne time</span>
+      <span data-diff></span>
+    </p>
 
     <!-- Announces "Copied" to screen readers -->
     <p class="sr-only" aria-live="polite" data-copy-status></p>
@@ -457,18 +454,13 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
     color: var(--text-muted);
   }
 
-  /* Digital clock under the cards */
+  /* Small one line clock under the cards */
   .clock {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: clamp(32px, 6vh, 56px);
-    text-align: center;
-  }
-
-  .clock-label,
-  .clock-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
+    margin-top: clamp(28px, 5vh, 44px);
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.14em;
@@ -476,42 +468,35 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
     color: #cdc6b9;
   }
 
+  .clock > span:not(:first-child):not(.sr-only):not(:empty)::before {
+    content: '·';
+    margin-right: 14px;
+    color: var(--text-muted);
+  }
+
   .clock-face {
-    font-family: var(--font-mono);
-    font-size: clamp(40px, 6vw, 60px);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.06em;
     font-variant-numeric: tabular-nums;
     color: #fcfaf5;
-    text-shadow: 0 0 24px rgba(138, 166, 200, 0.25);
   }
 
-  .clock-face .sec {
-    color: var(--accent);
+  [data-zone],
+  [data-diff] {
+    color: var(--text-muted);
   }
 
-  /* Colons blink once a second, like a bedside clock */
+  [data-zone] {
+    margin-left: 0.6em;
+  }
+
+  /* Colons blink once a second */
   .colon {
-    margin-inline: 0.04em;
     animation: blink 1s steps(1) infinite;
   }
 
   @keyframes blink {
     50% {
-      opacity: 0.25;
+      opacity: 0.3;
     }
-  }
-
-  .clock-meta {
-    display: flex;
-    gap: 14px;
-    color: var(--text-muted);
-  }
-
-  .clock-meta span + span:not(:empty)::before {
-    content: '·';
-    margin-right: 14px;
   }
 
   @media (prefers-reduced-motion: reduce) {
