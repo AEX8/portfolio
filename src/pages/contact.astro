@@ -1,10 +1,10 @@
 ---
 // Contact: a signal emblem, availability, and one card per way to get in touch
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/contact';
+import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } from '../data/contact';
 ---
 
-<BaseLayout title="Contact" active="contact" description="Get in touch with Gayath: email, LinkedIn, GitHub and CV.">
+<BaseLayout title="Contact" active="contact" description="Get in touch with Gayath: email, LinkedIn, GitHub and Discord.">
   <section class="page">
     <header class="head">
       <!-- A star sending out a signal -->
@@ -75,31 +75,47 @@ import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/con
         </div>
       </article>
 
-      <!-- CV -->
+      <!-- Discord -->
       <article class="panel card">
         <div class="card-head">
           <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>
+            <svg viewBox="0 0 24 24" class="filled"><path d="M19.27 5.33A16.6 16.6 0 0 0 15.2 4l-.2.4a15.3 15.3 0 0 1 3.7 1.2 12.8 12.8 0 0 0-11.4 0A15.3 15.3 0 0 1 11 4.4L10.8 4a16.6 16.6 0 0 0-4.07 1.33C4.1 9.2 3.4 13 3.75 16.75A16.7 16.7 0 0 0 8.8 19.3l.65-1.05a10.8 10.8 0 0 1-1.7-.82l.4-.3a11.9 11.9 0 0 0 7.7 0l.4.3a10.8 10.8 0 0 1-1.7.82l.65 1.05a16.7 16.7 0 0 0 5.05-2.55c.42-4.35-.71-8.12-2.98-11.42zM9.35 14.5c-.97 0-1.77-.9-1.77-2s.78-2 1.77-2 1.79.9 1.77 2c0 1.1-.78 2-1.77 2zm5.3 0c-.97 0-1.77-.9-1.77-2s.78-2 1.77-2 1.79.9 1.77 2c0 1.1-.78 2-1.77 2z"></path></svg>
           </span>
-          <h2 class="label">Résumé</h2>
+          <h2 class="label">Discord</h2>
         </div>
-        <p class="value">{CV ? 'PDF' : 'Coming soon'}</p>
+        <p class="value discord">{DISCORD.username || (DISCORD.userId ? 'Message me on Discord' : 'Coming soon')}</p>
         <div class="actions">
           {
-            CV ? (
-              <a class="action" href={CV} download>
-                Download CV <span aria-hidden="true">↓</span>
-              </a>
+            DISCORD.username ? (
+              <button class="action" type="button" data-copy={DISCORD.username} data-copy-what="Discord username">
+                <span data-copy-label>Copy</span>
+              </button>
             ) : (
-              <span class="action action-soon">Coming soon</span>
+              !DISCORD.userId && <span class="action action-soon">Coming soon</span>
+            )
+          }
+          {
+            DISCORD.userId && (
+              <a class="action" href={`https://discord.com/users/${DISCORD.userId}`} target="_blank" rel="noopener noreferrer">
+                Message <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span>
+              </a>
             )
           }
         </div>
       </article>
     </div>
 
-    <p class="where">
-      Based in {LOCATION} · Melbourne time
+    <!-- Live local time in Melbourne -->
+    <p class="clock" data-clock data-tz={TIME_ZONE}>
+      <span>{LOCATION}</span>
+      <span class="clock-face" aria-hidden="true">
+        <span data-hh>--</span><span class="colon">:</span><span data-mm>--</span><span class="colon">:</span><span
+          data-ss>--</span
+        >
+        <span data-zone>AEST</span>
+      </span>
+      <span class="sr-only" data-clock-text>Melbourne time</span>
+      <span data-diff></span>
     </p>
 
     <!-- Announces "Copied" to screen readers -->
@@ -143,6 +159,7 @@ import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/con
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
     const label = btn.querySelector<HTMLElement>('[data-copy-label]')!;
     const text = btn.dataset.copy ?? '';
+    const what = btn.dataset.copyWhat ?? 'Email address';
     let timer: number | undefined;
 
     btn.addEventListener('click', async () => {
@@ -156,11 +173,11 @@ import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/con
 
       if (copied) {
         label.textContent = 'Copied';
-        if (status) status.textContent = 'Email address copied';
+        if (status) status.textContent = `${what} copied`;
       } else {
-        selectText(btn.closest('.card')?.querySelector('.email') ?? null);
+        selectText(btn.closest('.card')?.querySelector('.value') ?? null);
         label.textContent = 'Selected';
-        if (status) status.textContent = 'Email address selected, ready to copy';
+        if (status) status.textContent = `${what} selected, ready to copy`;
       }
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
@@ -169,6 +186,61 @@ import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/con
       }, 2000);
     });
   });
+
+  // Live digital clock in Melbourne time, ticking every second
+  const clock = document.querySelector<HTMLElement>('[data-clock]');
+  if (clock) {
+    const tz = clock.dataset.tz ?? 'Australia/Melbourne';
+    const hh = clock.querySelector<HTMLElement>('[data-hh]')!;
+    const mm = clock.querySelector<HTMLElement>('[data-mm]')!;
+    const ss = clock.querySelector<HTMLElement>('[data-ss]')!;
+    const zone = clock.querySelector<HTMLElement>('[data-zone]')!;
+    const diff = clock.querySelector<HTMLElement>('[data-diff]')!;
+    const spoken = clock.querySelector<HTMLElement>('[data-clock-text]')!;
+
+    const parts = new Intl.DateTimeFormat('en-AU', {
+      timeZone: tz,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+      timeZoneName: 'short',
+    });
+
+    // Minutes between Melbourne and the visitor's own clock
+    const offsetMinutes = (date: Date) => {
+      const there = new Date(date.toLocaleString('en-US', { timeZone: tz }));
+      const here = new Date(date.toLocaleString('en-US'));
+      return Math.round((there.getTime() - here.getTime()) / 60000);
+    };
+
+    const tick = () => {
+      const now = new Date();
+      const p = Object.fromEntries(parts.formatToParts(now).map((x) => [x.type, x.value]));
+      hh.textContent = p.hour;
+      mm.textContent = p.minute;
+      ss.textContent = p.second;
+      zone.textContent = p.timeZoneName ?? '';
+
+      // Only refresh the slower text once a minute
+      if (p.second === '00' || !spoken.dataset.ready) {
+        spoken.textContent = `Melbourne time is ${p.hour}:${p.minute}`;
+        spoken.dataset.ready = '1';
+        const off = offsetMinutes(now);
+        const h = Math.abs(off) / 60;
+        const hours = Number.isInteger(h) ? `${h}` : h.toFixed(1);
+        diff.textContent =
+          off === 0 ? 'Same time as you' : `${hours} ${h === 1 ? 'hour' : 'hours'} ${off > 0 ? 'ahead of' : 'behind'} you`;
+      }
+    };
+
+    tick();
+    // Line up with the start of each second so the digits change on time
+    window.setTimeout(() => {
+      tick();
+      window.setInterval(tick, 1000);
+    }, 1000 - (Date.now() % 1000));
+  }
 </script>
 
 <style>
@@ -382,14 +454,55 @@ import { AVAILABILITY, CV, EMAIL, GITHUB, LINKEDIN, LOCATION } from '../data/con
     color: var(--text-muted);
   }
 
-  .where {
+  /* Small one line clock under the cards */
+  .clock {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
     margin-top: clamp(28px, 5vh, 44px);
-    text-align: center;
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #cdc6b9;
+  }
+
+  .clock > span:not(:first-child):not(.sr-only):not(:empty)::before {
+    content: '·';
+    margin-right: 14px;
+    color: var(--text-muted);
+  }
+
+  .clock-face {
+    font-variant-numeric: tabular-nums;
+    color: #fcfaf5;
+  }
+
+  [data-zone],
+  [data-diff] {
+    color: var(--text-muted);
+  }
+
+  [data-zone] {
+    margin-left: 0.6em;
+  }
+
+  /* Colons blink once a second */
+  .colon {
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .colon {
+      animation: none;
+    }
   }
 
   @media (max-width: 680px) {

@@ -1,12 +1,17 @@
 ---
 // Education: a constellation timeline of milestones, then coursework and course projects
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { COURSE_GROUPS, COURSE_PROJECTS, MILESTONES } from '../data/education';
+import CompanyLogo from '../components/CompanyLogo.astro';
+import { COURSE_GROUPS, COURSE_PROJECTS, COURSES_SHOWN, MILESTONES } from '../data/education';
 import { PROJECTS } from '../data/projects';
 
 const courseProjects = COURSE_PROJECTS.map((slug) => PROJECTS.find((p) => p.slug === slug)).filter(
   (p) => p !== undefined
 );
+
+// Course counts for the "Show all" button
+const totalCourses = COURSE_GROUPS.reduce((n, g) => n + g.courses.length, 0);
+const hiddenCount = COURSE_GROUPS.reduce((n, g) => n + Math.max(0, g.courses.length - COURSES_SHOWN), 0);
 
 // Four point star used on the timeline
 const star = (s: number) => {
@@ -35,9 +40,14 @@ const star = (s: number) => {
               </svg>
             </span>
             <div class="panel">
-              {m.period && <p class="period">{m.period}</p>}
-              <h2 class="m-title">{m.title}</h2>
-              <p class="org">{m.org}</p>
+              <div class="m-top">
+                {m.logo && <CompanyLogo name={m.logo} alt={`${m.org} logo`} />}
+                <div>
+                  {m.period && <p class="period">{m.period}</p>}
+                  <h2 class="m-title">{m.title}</h2>
+                  <p class="org">{m.org}</p>
+                </div>
+              </div>
               {m.details.length > 0 && (
                 <ul class="details">
                   {m.details.map((d) => (
@@ -51,18 +61,18 @@ const star = (s: number) => {
       }
     </ol>
 
-    <!-- Key coursework grouped by skill -->
-    <section class="block" aria-labelledby="coursework">
-      <h2 class="block-title" id="coursework">Key coursework</h2>
-      <div class="groups">
+    <!-- Coursework grouped by skill; a few per group, the rest behind "Show all" -->
+    <section class="block" aria-labelledby="coursework" data-courses>
+      <h2 class="block-title" id="coursework">Coursework</h2>
+      <div class="groups" id="course-groups">
         {
           COURSE_GROUPS.map((g) => (
             <div class="panel group">
               <h3 class="g-title">{g.name}</h3>
               {g.courses.length > 0 ? (
                 <ul class="tags">
-                  {g.courses.map((c) => (
-                    <li>{c}</li>
+                  {g.courses.map((c, i) => (
+                    <li class:list={{ extra: i >= COURSES_SHOWN }}>{c}</li>
                   ))}
                 </ul>
               ) : (
@@ -72,6 +82,14 @@ const star = (s: number) => {
           ))
         }
       </div>
+      {
+        hiddenCount > 0 && (
+          <button class="show-all" type="button" aria-expanded="false" aria-controls="course-groups" data-show-all>
+            <span data-label>Show all {totalCourses} courses</span>
+            <span class="chev" aria-hidden="true">↓</span>
+          </button>
+        )
+      }
     </section>
 
     <!-- Course projects, linking to their cards on the Projects page -->
@@ -96,6 +114,20 @@ const star = (s: number) => {
     </section>
   </section>
 </BaseLayout>
+
+<script>
+  // Show or hide the extra courses
+  const section = document.querySelector<HTMLElement>('[data-courses]');
+  const btn = section?.querySelector<HTMLButtonElement>('[data-show-all]');
+  const label = btn?.querySelector<HTMLElement>('[data-label]');
+  const total = label?.textContent ?? '';
+
+  btn?.addEventListener('click', () => {
+    const open = section!.classList.toggle('expanded');
+    btn.setAttribute('aria-expanded', String(open));
+    label!.textContent = open ? 'Show fewer' : total;
+  });
+</script>
 
 <style>
   .page {
@@ -211,6 +243,13 @@ const star = (s: number) => {
     color: var(--accent);
   }
 
+  /* Logo tile beside the title, same as Experience */
+  .m-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
   .m-title {
     font-family: var(--font-mono);
     font-size: clamp(17px, 1.6vw, 20px);
@@ -263,6 +302,11 @@ const star = (s: number) => {
     padding: 20px 22px;
   }
 
+  /* An odd last group spans the full row */
+  .group:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
   .g-title {
     margin-bottom: 12px;
     font-family: var(--font-mono);
@@ -273,20 +317,67 @@ const star = (s: number) => {
     color: var(--accent);
   }
 
+  /* Courses as a simple bullet list */
   .tags {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    list-style: none;
-    padding: 0;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #e6dfd2;
   }
 
-  .tags li {
-    padding: 3px 10px;
+  .tags li::marker {
+    color: var(--text-muted);
+  }
+
+  /* Extra courses stay hidden until "Show all" */
+  .tags .extra {
+    display: none;
+  }
+
+  .expanded .tags .extra {
+    display: list-item;
+    animation: course-in 0.35s var(--ease) both;
+  }
+
+  @keyframes course-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  .show-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 9px 18px;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
-    font-size: 13px;
-    color: #e6dfd2;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fcfaf5;
+    cursor: pointer;
+    transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  .show-all:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .chev {
+    transition: transform var(--slow) var(--ease);
+  }
+
+  .expanded .chev {
+    transform: rotate(180deg);
   }
 
   .soon {

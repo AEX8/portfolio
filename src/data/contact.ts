@@ -1,6 +1,5 @@
 // Contact details shown on the Contact page
 import { PLANETS } from '../lib/orbit';
-import { CV_PATH } from './experience';
 
 export const EMAIL = 'wethmingayath@gmail.com';
 
@@ -16,9 +15,13 @@ export const GITHUB = {
   handle: githubUrl.replace('https://', ''),
 };
 
-// Shared with the Experience page download button
-export const CV = CV_PATH;
+// Discord username, and the numeric user ID for the profile link (both optional until filled in)
+export const DISCORD = {
+  username: '',
+  userId: '879561870024003604',
+};
 
 // Temporary wording, to be replaced
 export const AVAILABILITY = 'Open to graduate software roles';
 export const LOCATION = 'Melbourne, Australia';
+export const TIME_ZONE = 'Australia/Melbourne';
