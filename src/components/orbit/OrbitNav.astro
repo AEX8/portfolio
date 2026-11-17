@@ -614,11 +614,33 @@ const f = (n: number) => n.toFixed(1);
     }
 
     .title {
-      font-size: 13.5px;
+      font-size: 15px;
     }
 
     .node-sun .title {
-      font-size: 14.5px;
+      font-size: 16px;
+    }
+
+    /* Bigger, brighter planets so they read on a small screen */
+    .planet-star,
+    .planet-core,
+    .planet-ring {
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: scale(1.4);
+    }
+
+    .planet-star,
+    .planet-core {
+      fill: #fcfaf5;
+    }
+
+    .planet-ring {
+      stroke-opacity: 0.6;
+    }
+
+    .planet-halo {
+      transform: scale(1.3);
     }
 
     /* GitHub sits close to the centre, so its label goes above the planet */
