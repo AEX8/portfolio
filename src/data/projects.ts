@@ -32,6 +32,7 @@ export const PROJECTS: Project[] = [
     live: 'https://ibm-ai-powered-consulting-game-fron.vercel.app/',
     image: '/projects/ibm-consulting-game.webp',
     imageFit: 'cover',
+    imagePos: 'top',
     shade: 'edges',
   },
   {
