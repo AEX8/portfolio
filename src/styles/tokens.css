@@ -31,3 +31,13 @@
 
   color-scheme: dark;
 }
+
+/* Phones: screens look darker in the hand, so lift the background, muted text and lines a little */
+@media (max-width: 640px) {
+  :root {
+    --bg: #0e1015;
+    --text-muted: #a39d91;
+    --line: rgba(230, 223, 210, 0.16);
+    --line-strong: rgba(230, 223, 210, 0.34);
+  }
+}
