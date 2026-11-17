@@ -32,7 +32,20 @@ export const PROJECT_DETAILS: Record<string, ProjectDetails> = {
         ],
       },
     ],
-    stack: ['AI', 'Firebase', 'Vercel'],
+    stack: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'Phaser',
+      'Firebase Authentication',
+      'Firestore',
+      'Groq (LLM)',
+      'Vercel',
+      'pnpm',
+      'Vitest',
+      'GitHub Actions',
+    ],
   },
 
   parsify: {

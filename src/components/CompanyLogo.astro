@@ -1,0 +1,57 @@
+---
+// Company logo in its original colours, on a small light tile
+interface Props {
+  name: string; // file name in /public/logos
+  alt: string;
+  size?: 'md' | 'sm';
+}
+
+const { name, alt, size = 'md' } = Astro.props;
+---
+
+<span class:list={['logo', size, `l-${name}`]}>
+  <img src={`/logos/${name}.webp`} alt={alt} loading="lazy" decoding="async" />
+</span>
+
+<style>
+  .logo {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    /* Light tile so brand colours read clearly on the dark page */
+    background: #f4f1ea;
+  }
+
+  .logo.sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .logo img {
+    max-width: 68%;
+    max-height: 68%;
+    object-fit: contain;
+  }
+
+  /* Wide wordmarks and round badges need more room to read */
+  .l-ibm img {
+    max-width: 80%;
+  }
+
+  .l-cedar img {
+    max-width: 88%;
+    max-height: 88%;
+  }
+
+  @media (max-width: 720px) {
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+    }
+  }
+</style>
