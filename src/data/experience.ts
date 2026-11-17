@@ -47,7 +47,7 @@ export const ROLES: Role[] = [
     type: 'Volunteer',
     start: 'Jul 2025',
     end: 'Present',
-    bullets: [],
+    bullets: ['Teach students and help them work through their course materials.'],
     logo: 'rmit',
   },
 ];
