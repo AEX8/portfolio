@@ -4,7 +4,7 @@ import { PLANETS } from '../lib/orbit';
 export const EMAIL = 'wethmingayath@gmail.com';
 
 export const LINKEDIN = {
-  url: 'https://www.linkedin.com/in/gayath-wethmin-kaluwahewa-a4a7b82a3/',
+  url: 'https://www.linkedin.com/in/gayath-wethmin/',
   handle: 'Gayath Wethmin Kaluwahewa',
 };
 
