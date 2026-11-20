@@ -67,10 +67,27 @@ import OrbitNav from '../components/orbit/OrbitNav.astro';
     }
   }
 
+  /* Stacked: name and role line centred above the solar system */
+  @media (max-width: 900px) {
+    .intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-left: 0;
+      text-align: center;
+    }
+
+    /* Letter spacing adds a gap after the last letter too; this pulls it back so the text sits truly centred */
+    .role {
+      margin-right: -0.24em;
+    }
+  }
+
   @media (max-width: 640px) {
     .role {
       font-size: 12px;
       letter-spacing: 0.16em;
+      margin-right: -0.16em;
     }
   }
 </style>
