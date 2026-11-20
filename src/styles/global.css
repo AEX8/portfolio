@@ -12,6 +12,10 @@
 html {
   background: var(--bg);
   -webkit-text-size-adjust: 100%;
+  /* Phones scroll the html element, so wide pieces like the solar system must be cut off here too.
+     clip cuts them off without making a scroll box; hidden is the fallback for old browsers */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -25,7 +29,9 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* hidden for old browsers, clip where supported so the body can't be dragged sideways */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 img,
