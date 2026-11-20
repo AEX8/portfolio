@@ -118,9 +118,10 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'team69-cloud-computing',
-    title: 'Cloud Computing',
-    summary: TBC,
-    tags: [],
+    title: 'Music Subscription App',
+    summary:
+      'A music subscription web app on AWS. The same Java backend runs on EC2, in a Docker container on ECS and as Lambda functions to compare the three.',
+    tags: ['Java', 'AWS Lambda', 'DynamoDB', 'S3', 'ECS', 'EC2'],
     github: `${GH}/Team69-cloud-computing`,
     image: '/projects/team69-cloud-computing.webp',
     imagePos: 'top',
