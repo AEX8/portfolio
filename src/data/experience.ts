@@ -20,7 +20,7 @@ export interface SmallItem {
 }
 
 // Path to the CV in /public, e.g. "/cv/gayath-cv.pdf". Leave empty to hide the download.
-export const CV_PATH = '';
+export const CV_PATH = '/cv/Gayath_Kaluwahewa_CV.pdf';
 
 // Main roles, newest first
 export const ROLES: Role[] = [

@@ -23,9 +23,16 @@ const star = (s: number) => {
       <p class="intro">Roles, teams and what I shipped.</p>
       {
         CV_PATH ? (
-          <a class="cv" href={CV_PATH} download>
-            Download CV <span aria-hidden="true">↓</span>
-          </a>
+          <div class="cv-actions">
+            {/* Opens in the browser's own PDF viewer, no download */}
+            <a class="cv" href={CV_PATH} target="_blank" rel="noopener">
+              View CV <span aria-hidden="true">↗</span>
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a class="cv" href={CV_PATH} download>
+              Download <span aria-hidden="true">↓</span>
+            </a>
+          </div>
         ) : (
           <span class="cv cv-soon">CV coming soon</span>
         )
@@ -160,6 +167,18 @@ const star = (s: number) => {
     text-transform: uppercase;
     color: #fcfaf5;
     transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  }
+
+  .cv-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .cv-actions .cv {
+    margin-top: 0;
   }
 
   a.cv:hover {
