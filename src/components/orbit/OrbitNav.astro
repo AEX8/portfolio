@@ -22,8 +22,8 @@ const f = (n: number) => n.toFixed(1);
   <svg class="orbit-svg" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} aria-hidden="true">
     <defs>
       <radialGradient id="orbit-halo">
-        <stop offset="0" stop-color="#e6dfd2" stop-opacity="0.22"></stop>
-        <stop offset="0.35" stop-color="#e6dfd2" stop-opacity="0.05"></stop>
+        <stop offset="0" stop-color="#e6dfd2" stop-opacity="0.32"></stop>
+        <stop offset="0.35" stop-color="#e6dfd2" stop-opacity="0.08"></stop>
         <stop offset="1" stop-color="#e6dfd2" stop-opacity="0"></stop>
       </radialGradient>
       <radialGradient id="orbit-sun-halo">
@@ -36,6 +36,15 @@ const f = (n: number) => n.toFixed(1);
         <stop offset="0.75" stop-color="#151a22"></stop>
         <stop offset="1" stop-color="#2a3442"></stop>
       </radialGradient>
+      <!-- Soft glow: a blurred copy of the star placed behind the sharp one -->
+      <filter id="orbit-glow" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="blur"></feGaussianBlur>
+        <feMerge>
+          <feMergeNode in="blur"></feMergeNode>
+          <feMergeNode in="blur"></feMergeNode>
+          <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
+      </filter>
     </defs>
 
     <!-- Full orbits, kept faint -->
@@ -78,8 +87,10 @@ const f = (n: number) => n.toFixed(1);
         <g class="planet" data-planet={p.key} transform={`translate(${f(p.pos.x)} ${f(p.pos.y)}) scale(${p.scale.toFixed(3)})`}>
           <circle class="planet-halo" r="30" fill="url(#orbit-halo)" />
           <circle class="planet-ring" r="12" />
-          <path class="planet-star" d="M0 -10L1 -1L10 0L1 1L0 10L-1 1L-10 0L-1 -1Z" />
-          <circle class="planet-core" r="2.6" />
+          <g filter="url(#orbit-glow)">
+            <path class="planet-star" d="M0 -10L1 -1L10 0L1 1L0 10L-1 1L-10 0L-1 -1Z" />
+            <circle class="planet-core" r="2.6" />
+          </g>
         </g>
       ))
     }
