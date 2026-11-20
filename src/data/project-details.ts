@@ -229,6 +229,33 @@ export const PROJECT_DETAILS: Record<string, ProjectDetails> = {
     stack: ['Python', 'pandas', 'NumPy', 'scikit-learn', 'Matplotlib', 'joblib'],
   },
 
+  'team69-cloud-computing': {
+    overview: [
+      'A music subscription web app built on AWS as a university group project. Users register, log in, search a song catalogue and subscribe to or unsubscribe from songs.',
+      'Most of the work went into running the same Java backend three different ways to compare AWS compute options.',
+    ],
+    sections: [
+      {
+        title: 'Three ways to run it',
+        points: [
+          'EC2: a plain Java HTTP server',
+          'ECS: the same server packaged in a Docker container',
+          'Lambda: a serverless version with a router and one handler per action, behind API Gateway',
+        ],
+      },
+      {
+        title: 'How it works',
+        points: [
+          'Frontend in plain HTML, CSS and JavaScript with login, register and main pages',
+          'Songs and users stored in DynamoDB, with indexes on the music table for search',
+          'Artist images stored in S3',
+          'Setup tools that create the tables and buckets, load the song data and upload the images',
+        ],
+      },
+    ],
+    stack: ['Java', 'AWS Lambda', 'API Gateway', 'DynamoDB', 'S3', 'ECS', 'EC2', 'Docker', 'HTML', 'CSS', 'JavaScript'],
+  },
+
   'retail-analytics-pipeline': {
     overview: [
       'A simulated online store keeps its data in three systems that do not talk to each other: a live database, a legacy system that exports daily CSV files and a shipping partner API. This pipeline joins them automatically so simple business questions get answered.',
