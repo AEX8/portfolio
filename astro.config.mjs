@@ -3,6 +3,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  // Used for canonical URLs and the sitemap later
+  // Used for canonical URLs, share image links and the sitemap
   site: 'https://gayath.dev',
 });
