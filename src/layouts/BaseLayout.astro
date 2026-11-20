@@ -26,6 +26,8 @@ const {
 
 const fullTitle = title ? `${title} | Gayath` : 'Gayath';
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Share image shown when a link is posted; needs a full URL
+const ogImage = new URL('/og.jpg', Astro.site).href;
 ---
 
 <!doctype html>
@@ -49,6 +51,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Gayath" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Gayath, written in binary digits on a star chart, beside a solar system menu" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body>
     <Backdrop />
