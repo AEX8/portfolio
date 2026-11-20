@@ -1,7 +1,7 @@
 ---
 // Contact: a signal emblem, availability, and one card per way to get in touch
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } from '../data/contact';
+import { AVAILABILITY, CV, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } from '../data/contact';
 ---
 
 <BaseLayout title="Contact" active="contact" description="Get in touch with Gayath: email, LinkedIn, GitHub and Discord.">
@@ -103,6 +103,28 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
           }
         </div>
       </article>
+
+      <!-- CV, full width under the four cards -->
+      {
+        CV && (
+          <article class="panel card card-wide">
+            <div class="card-head">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>
+              </span>
+              <h2 class="label">CV</h2>
+            </div>
+            <div class="actions">
+              <a class="action" href={CV} target="_blank" rel="noopener">
+                View CV <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span>
+              </a>
+              <a class="action" href={CV} download>
+                Download <span aria-hidden="true">↓</span>
+              </a>
+            </div>
+          </article>
+        )
+      }
     </div>
 
     <!-- Live local time in Melbourne -->
@@ -370,6 +392,20 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
     transform: translateY(-2px);
   }
 
+  /* CV card spans both columns, with its buttons on the right */
+  .card-wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-wide .actions {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
   .card-head {
     display: flex;
     align-items: center;
@@ -486,6 +522,18 @@ import { AVAILABILITY, DISCORD, EMAIL, GITHUB, LINKEDIN, LOCATION, TIME_ZONE } f
 
   [data-zone] {
     margin-left: 0.6em;
+  }
+
+  /* Phones: "hours ahead of you" gets its own line, without a leading dot */
+  @media (max-width: 640px) {
+    .clock [data-diff] {
+      flex-basis: 100%;
+      text-align: center;
+    }
+
+    .clock [data-diff]::before {
+      content: none !important;
+    }
   }
 
   /* Colons blink once a second */
