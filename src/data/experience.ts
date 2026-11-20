@@ -20,7 +20,7 @@ export interface SmallItem {
 }
 
 // Path to the CV in /public, e.g. "/cv/gayath-cv.pdf". Leave empty to hide the download.
-export const CV_PATH = '';
+export const CV_PATH = '/cv/Gayath_Kaluwahewa_CV.pdf';
 
 // Main roles, newest first
 export const ROLES: Role[] = [
@@ -35,7 +35,7 @@ export const ROLES: Role[] = [
       'Owned all communication with the IBM client and every project management duty for the team.',
       'Contributed as a developer alongside managing the project.',
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
-      'Led the team through an industry showcase event organised with IBM, RMIT, Telstra, NBN and the Grand Prix.',
+      'Led the team through an industry showcase event organised with IBM, RMIT, Microsoft, Amazon, Telstra, NBN and the Grand Prix.',
     ],
     logo: 'ibm',
     project: 'ibm-consulting-game',

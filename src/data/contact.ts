@@ -1,5 +1,9 @@
 // Contact details shown on the Contact page
 import { PLANETS } from '../lib/orbit';
+import { CV_PATH } from './experience';
+
+// Same CV file as the Experience page
+export const CV = CV_PATH;
 
 export const EMAIL = 'wethmingayath@gmail.com';
 
