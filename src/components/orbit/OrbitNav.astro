@@ -161,9 +161,10 @@ const f = (n: number) => n.toFixed(1);
 </div>
 
 <script>
-  import { BASE_TILT, BASE_TURN, PLANETS, VIEW, depthScale, project, trailPaths } from '../../lib/orbit';
+  import { BASE_TILT, BASE_TURN, PHONE_QUERY, PHONE_TURN, PLANETS, VIEW, depthScale, project, trailPaths } from '../../lib/orbit';
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = window.matchMedia(PHONE_QUERY);
 
   document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
     const svg = root.querySelector('svg')!;
@@ -181,9 +182,9 @@ const f = (n: number) => n.toFixed(1);
     });
     const sun = svg.querySelector<SVGGElement>('[data-planet="sun"]')!;
 
-    let tilt = BASE_TILT;
-    let turn = BASE_TURN;
-    let target = { tilt: BASE_TILT, turn: BASE_TURN };
+    // Fixed angle, the system does not follow the mouse; phones turn it a little further
+    const tilt = BASE_TILT;
+    let turn = phone.matches ? PHONE_TURN : BASE_TURN;
     let time = 0;
     let last = 0;
     let raf = 0;
@@ -196,7 +197,8 @@ const f = (n: number) => n.toFixed(1);
 
     // Place orbits, trails, planets and their links for the current time
     const draw = () => {
-      const moved = Math.abs(tilt - drawnTilt) > 0.0005 || Math.abs(turn - drawnTurn) > 0.0005;
+      // Also true on the first draw, when nothing has been drawn yet
+      const moved = tilt !== drawnTilt || turn !== drawnTurn;
       if (moved) {
         drawnTilt = tilt;
         drawnTurn = turn;
@@ -228,9 +230,6 @@ const f = (n: number) => n.toFixed(1);
       last = now;
       // Drift pauses while a link is hovered or focused
       if (!hovered) time += dt;
-      const ease = Math.min(1, dt * 2.5);
-      tilt += (target.tilt - tilt) * ease;
-      turn += (target.turn - turn) * ease;
       draw();
       raf = requestAnimationFrame(frame);
     };
@@ -245,17 +244,6 @@ const f = (n: number) => n.toFixed(1);
       cancelAnimationFrame(raf);
       raf = 0;
     };
-
-    // Lean the system a little towards the mouse
-    window.addEventListener(
-      'pointermove',
-      (e) => {
-        const x = (e.clientX / window.innerWidth) * 2 - 1;
-        const y = (e.clientY / window.innerHeight) * 2 - 1;
-        target = { tilt: BASE_TILT + y * 0.05, turn: BASE_TURN + x * 0.05 };
-      },
-      { passive: true }
-    );
 
     // Highlight the planet and trail that belong to a link
     const setActive = (key: string, on: boolean) => {
@@ -281,6 +269,11 @@ const f = (n: number) => n.toFixed(1);
     }).observe(root);
     document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
     reduce.addEventListener('change', () => (reduce.matches ? stop() : start()));
+    // Switch angle if the screen crosses the phone size
+    phone.addEventListener('change', () => {
+      turn = phone.matches ? PHONE_TURN : BASE_TURN;
+      draw();
+    });
 
     draw();
     root.classList.add('is-ready');
@@ -619,9 +612,27 @@ const f = (n: number) => n.toFixed(1);
       transform: translateX(-50%);
     }
 
-    .icon,
     .hint {
       display: none;
+    }
+
+    /* Small icon above each title, so labels stay narrow */
+    .node[data-side] .label {
+      flex-direction: column;
+      gap: 3px;
+      text-align: center;
+    }
+
+    .icon {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      background-size: 5px 1px, 1px 5px, 5px 1px, 1px 5px, 5px 1px, 1px 5px, 5px 1px, 1px 5px;
+    }
+
+    .icon svg {
+      width: 15px;
+      height: 15px;
     }
 
     .title {
@@ -654,9 +665,17 @@ const f = (n: number) => n.toFixed(1);
       transform: scale(1.3);
     }
 
-    /* GitHub sits close to the centre, so its label goes above the planet */
-    .node[data-node='github'] .label {
-      top: -36px;
+    /* GitHub and Projects labels go above their planets to stay clear of the inner ones */
+    .node[data-node='github'] .label,
+    .node[data-node='projects'] .label {
+      top: -66px;
+    }
+
+    /* Contact label sits to the right of its planet, clear of Education below */
+    .node[data-node='contact'] .label {
+      left: 20px;
+      top: 0;
+      transform: translateY(-50%);
     }
   }
 </style>
