@@ -8,7 +8,7 @@ export const BASE_TILT = 0.48;
 export const BASE_TURN = -0.24;
 
 // Phones turn the plane a little further left so it fits the narrow screen
-export const PHONE_TURN = -0.4;
+export const PHONE_TURN = -0.32;
 export const PHONE_QUERY = '(max-width: 640px)';
 
 // Fading trail behind each planet: how long (degrees) and how many pieces

@@ -197,7 +197,8 @@ const f = (n: number) => n.toFixed(1);
 
     // Place orbits, trails, planets and their links for the current time
     const draw = () => {
-      const moved = Math.abs(tilt - drawnTilt) > 0.0005 || Math.abs(turn - drawnTurn) > 0.0005;
+      // Also true on the first draw, when nothing has been drawn yet
+      const moved = tilt !== drawnTilt || turn !== drawnTurn;
       if (moved) {
         drawnTilt = tilt;
         drawnTurn = turn;
