@@ -4,7 +4,7 @@
 export interface Project {
   slug: string;
   title: string;
-  summary: string;
+  summary?: string; // left out until there is text for it
   tags: string[];
   github?: string; // repo link
   live?: string; // live demo link
@@ -18,7 +18,6 @@ export interface Project {
   status?: 'In progress';
 }
 
-const TBC = 'Description coming soon.';
 const GH = 'https://github.com/AEX8';
 
 export const PROJECTS: Project[] = [
@@ -110,7 +109,6 @@ export const PROJECTS: Project[] = [
   {
     slug: 'team9-garage-boilerplate',
     title: 'Garage Boilerplate',
-    summary: TBC,
     tags: [],
     github: `${GH}/team9-garage-boilerplate`,
     image: '/projects/team9-garage-boilerplate.webp',
