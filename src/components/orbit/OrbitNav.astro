@@ -161,9 +161,10 @@ const f = (n: number) => n.toFixed(1);
 </div>
 
 <script>
-  import { BASE_TILT, BASE_TURN, PLANETS, VIEW, depthScale, project, trailPaths } from '../../lib/orbit';
+  import { BASE_TILT, BASE_TURN, PHONE_QUERY, PHONE_TURN, PLANETS, VIEW, depthScale, project, trailPaths } from '../../lib/orbit';
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = window.matchMedia(PHONE_QUERY);
 
   document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
     const svg = root.querySelector('svg')!;
@@ -181,9 +182,9 @@ const f = (n: number) => n.toFixed(1);
     });
     const sun = svg.querySelector<SVGGElement>('[data-planet="sun"]')!;
 
-    // Fixed angle, the system does not follow the mouse
+    // Fixed angle, the system does not follow the mouse; phones turn it a little further
     const tilt = BASE_TILT;
-    const turn = BASE_TURN;
+    let turn = phone.matches ? PHONE_TURN : BASE_TURN;
     let time = 0;
     let last = 0;
     let raf = 0;
@@ -267,6 +268,11 @@ const f = (n: number) => n.toFixed(1);
     }).observe(root);
     document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
     reduce.addEventListener('change', () => (reduce.matches ? stop() : start()));
+    // Switch angle if the screen crosses the phone size
+    phone.addEventListener('change', () => {
+      turn = phone.matches ? PHONE_TURN : BASE_TURN;
+      draw();
+    });
 
     draw();
     root.classList.add('is-ready');
