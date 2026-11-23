@@ -85,8 +85,8 @@ import OrbitNav from '../components/orbit/OrbitNav.astro';
     }
   }
 
-  /* Stack on smaller screens */
-  @media (max-width: 900px) {
+  /* Stack on smaller screens and on tablets held upright */
+  @media (max-width: 900px), (orientation: portrait) and (max-width: 1100px) {
     .hero {
       grid-template-columns: 1fr;
       align-content: start;
@@ -94,8 +94,17 @@ import OrbitNav from '../components/orbit/OrbitNav.astro';
     }
   }
 
+  /* Upright tablets are tall, so centre the stack instead of leaving space at the bottom */
+  @media (min-width: 641px) and (orientation: portrait) and (max-width: 1100px) {
+    .hero {
+      align-content: center;
+      padding-top: 0;
+      gap: 56px;
+    }
+  }
+
   /* Stacked: name and role line centred above the solar system */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (orientation: portrait) and (max-width: 1100px) {
     .intro {
       display: flex;
       flex-direction: column;
