@@ -31,7 +31,7 @@ export const ROLES: Role[] = [
     start: 'Sep 2026',
     end: 'Dec 2026',
     bullets: [
-      'Led a team of five building an AI powered, 2D RPG style consulting simulation game that trains junior and graduate consultants.',
+      'Led a team of five building an AI powered, 2D RPG style consulting simulation game that trains junior and graduate consultants, delivered over three sprints.',
       'Owned all communication with the IBM client and every project management duty for the team.',
       'Contributed as a developer alongside managing the project.',
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
