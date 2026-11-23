@@ -236,6 +236,10 @@ const strands = [
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    /* Own layer, so scrolling the page never repaints the sky */
+    transform: translateZ(0);
+    contain: strict;
+    isolation: isolate;
   }
 
   .layer {
@@ -477,6 +481,26 @@ const strands = [
     /* This one lands on the name on narrow screens */
     .c0 {
       display: none;
+    }
+  }
+
+  /* Touch screens: drop the heaviest effects so scrolling stays smooth.
+     Twinkles, glints and shooting stars still play */
+  @media (hover: none) and (pointer: coarse) {
+    .grain,
+    .particles {
+      display: none;
+    }
+
+    .arcs .dashed,
+    .particles circle,
+    .emblem-spin,
+    .ink {
+      animation: none;
+    }
+
+    .ink {
+      will-change: auto;
     }
   }
 
