@@ -633,10 +633,11 @@ const f = (n: number) => n.toFixed(1);
       display: none;
     }
 
-    /* Small icon beside each title, same as laptops */
+    /* Small icon above each title, so labels stay narrow */
     .node[data-side] .label {
-      flex-direction: row;
-      gap: 6px;
+      flex-direction: column;
+      gap: 3px;
+      text-align: center;
     }
 
     .icon {
@@ -684,20 +685,14 @@ const f = (n: number) => n.toFixed(1);
     /* GitHub and Projects labels go above their planets to stay clear of the inner ones */
     .node[data-node='github'] .label,
     .node[data-node='projects'] .label {
-      top: -44px;
+      top: -66px;
     }
 
-    /* Education label sits to the right of its planet, clear of Experience */
-    .node[data-node='education'] .label {
+    /* Contact label sits to the right of its planet, clear of Education below */
+    .node[data-node='contact'] .label {
       left: 20px;
       top: 0;
       transform: translateY(-50%);
-    }
-
-    /* Experience is near the left edge, so its label starts at the planet instead of centring */
-    .node[data-node='experience'] .label {
-      left: -16px;
-      transform: none;
     }
   }
 </style>
