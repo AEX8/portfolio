@@ -297,7 +297,8 @@ const f = (n: number) => n.toFixed(1);
     aspect-ratio: 900 / 560;
   }
 
-  @media (max-width: 900px) {
+  /* Stacked layout (small screens and upright tablets) */
+  @media (max-width: 900px), (orientation: portrait) and (max-width: 1100px) {
     .orbit {
       width: 112%;
     }
@@ -617,6 +618,32 @@ const f = (n: number) => n.toFixed(1);
 
     .node-sun .title {
       font-size: 16px;
+    }
+  }
+
+  /* Tablets: the stacked layout has room for the icons again, a little smaller */
+  @media (min-width: 641px) and (max-width: 900px), (min-width: 641px) and (orientation: portrait) and (max-width: 1100px) {
+    .orbit {
+      width: 100%;
+    }
+
+    /* Experience is close to the left edge, so its label hangs below the planet */
+    .node[data-node='experience'] .label {
+      right: auto;
+      left: 50%;
+      top: 22px;
+      transform: translateX(-50%);
+    }
+
+    .icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+    }
+
+    .icon svg {
+      width: 20px;
+      height: 20px;
     }
   }
 

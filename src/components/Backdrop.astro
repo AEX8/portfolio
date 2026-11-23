@@ -195,7 +195,7 @@ const strands = [
   </svg>
 
   <!-- Ink brush clouds, bottom right -->
-  <svg class="layer ink" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMax slice">
+  <svg class="layer ink ink-bottom" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMax slice">
     <g transform="translate(1680 760) rotate(148) scale(1 1.1)">
       <g class="cloud" filter="url(#ink)">
         {strands.slice(0, 2).map((d) => <path d={d} fill="url(#ink-bone)" />)}
@@ -457,13 +457,18 @@ const strands = [
       right: 0;
       width: calc(100vh * 1.6);
       width: calc(100lvh * 1.6);
-      transform: translate(-44px, 75.5vh) scale(1.35);
-      transform: translate(-44px, 75.5lvh) scale(1.35);
+      transform: translate(-14px, 69vh) scale(1.35);
+      transform: translate(-14px, 69lvh) scale(1.35);
       transform-origin: top right;
     }
 
     .ink-top {
       opacity: 0.45;
+    }
+
+    /* Bottom right strokes kept dark so they sit behind the content */
+    .ink-bottom {
+      opacity: 0.3;
     }
 
     /* This one lands on the name on narrow screens */
