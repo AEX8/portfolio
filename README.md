@@ -1,43 +1,37 @@
-# Astro Starter Kit: Minimal
+# gayath.dev
+
+My personal portfolio, live at **[gayath.dev](https://gayath.dev)**.
+
+A static site with a star chart background and a solar system menu, all drawn in code. Built with Astro and plain CSS, with only a few small scripts in the browser.
+
+## Stack
+
+- **Site:** Astro, TypeScript, CSS
+- **Hosting:** AWS S3 and CloudFront, with Route 53 and ACM for the domain
+- **Infrastructure:** Terraform
+- **Deploys:** GitHub Actions using OIDC, so no AWS keys are stored in GitHub
+
+## Run it locally
+
+Needs Node 22 or newer.
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Then open http://localhost:4321.
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project layout
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/pages       one file per page
+src/components  layout, background and solar system menu
+src/data        page content (projects, experience, education)
+public          images, icons and the CV
+infra           Terraform for AWS
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Deploys
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Work happens on feature branches off `dev`. Merging into `main` builds the site and uploads it to S3, then clears the CloudFront cache.
