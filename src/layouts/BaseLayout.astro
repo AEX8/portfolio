@@ -27,7 +27,8 @@ const {
 const fullTitle = title ? `${title} | Gayath` : 'Gayath';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Share image shown when a link is posted; needs a full URL
-const ogImage = new URL('/og.jpg', Astro.site).href;
+// New file name for each new image, so LinkedIn and others fetch it instead of a saved copy
+const ogImage = new URL('/og-v2.jpg', Astro.site).href;
 ---
 
 <!doctype html>
