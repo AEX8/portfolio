@@ -22,7 +22,7 @@ export const MILESTONES: Milestone[] = [
   {
     title: 'Bachelor of Computer Science',
     org: 'RMIT University',
-    period: '2024 to 2026',
+    period: 'Mar 2024 to Nov 2026',
     details: ['Major: Advanced Computer Science'],
     main: true,
     logo: 'rmit',

@@ -36,6 +36,7 @@ export const ROLES: Role[] = [
       'Contributed as a developer alongside managing the project.',
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
       'Led the team through an industry showcase event organised with IBM, RMIT, Microsoft, Amazon, Telstra, NBN and the Grand Prix.',
+      'Achieved a High Distinction for the capstone, with a final mark of 86.9 out of 100.',
     ],
     logo: 'ibm',
     project: 'ibm-consulting-game',
@@ -54,5 +55,5 @@ export const ROLES: Role[] = [
 
 // Non tech roles, one line each
 export const OTHER_ROLES: SmallItem[] = [
-  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality', logo: 'cedar' },
+  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality', period: 'Part time · Apr 2025 to Present', logo: 'cedar' },
 ];
