@@ -29,7 +29,7 @@ const side = project.shade ?? sides[index % sides.length];
       <h2 class="title">{project.title}</h2>
       {project.status && <span class="status">{project.status}</span>}
     </div>
-    <p class="summary">{project.summary}</p>
+    {project.summary && <p class="summary">{project.summary}</p>}
 
     {
       project.tags.length > 0 && (
