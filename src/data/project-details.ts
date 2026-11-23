@@ -12,13 +12,14 @@ export interface ProjectDetails {
   stack: string[];
   learned?: string;
   note?: string; // status or context worth stating plainly
+  endNote?: string; // shown at the very end, after the stack
 }
 
 export const PROJECT_DETAILS: Record<string, ProjectDetails> = {
   'ibm-consulting-game': {
     overview: [
       'Consultancy 101 is an AI powered consulting simulation built as a 2D RPG style game. It is designed to help junior and graduate consultants build their skills.',
-      'It was my RMIT capstone project, built for IBM as the industry client.',
+      'It was my RMIT capstone project, built for IBM as the industry client over three sprints.',
     ],
     sections: [
       {
@@ -46,6 +47,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetails> = {
       'Vitest',
       'GitHub Actions',
     ],
+    endNote: 'Built for laptops and iPads. It runs on phones too, but is not designed for mobile.',
   },
 
   parsify: {
