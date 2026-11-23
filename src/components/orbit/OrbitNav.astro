@@ -36,6 +36,12 @@ const f = (n: number) => n.toFixed(1);
         <stop offset="0.75" stop-color="#151a22"></stop>
         <stop offset="1" stop-color="#2a3442"></stop>
       </radialGradient>
+      <!-- Soft glow just outside the centre disc -->
+      <radialGradient id="orbit-sun-glow">
+        <stop offset="0.4" stop-color="#8aa6c8" stop-opacity="0"></stop>
+        <stop offset="0.55" stop-color="#8aa6c8" stop-opacity="0.28"></stop>
+        <stop offset="1" stop-color="#8aa6c8" stop-opacity="0"></stop>
+      </radialGradient>
       <!-- Soft glow: a blurred copy of the star placed behind the sharp one -->
       <filter id="orbit-glow" x="-100%" y="-100%" width="300%" height="300%">
         <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="blur"></feGaussianBlur>
@@ -76,6 +82,7 @@ const f = (n: number) => n.toFixed(1);
     <!-- Centre -->
     <g class="sun" data-planet="sun" transform={`translate(${VIEW.cx} ${VIEW.cy})`}>
       <circle class="sun-halo" r="130" fill="url(#orbit-sun-halo)"></circle>
+      <circle class="sun-glow" r="70" fill="url(#orbit-sun-glow)"></circle>
       <circle class="sun-pulse" r="32"></circle>
       <circle class="sun-outer" r="40"></circle>
       <circle class="sun-body" r="32" fill="url(#orbit-sun-body)"></circle>
@@ -391,6 +398,16 @@ const f = (n: number) => n.toFixed(1);
     transform: scale(1.25);
   }
 
+  /* Glow around the centre slowly brightens and fades */
+  .sun-glow {
+    animation: glow 8s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+
   /* Planets: small sparkle stars with a thin ring */
   .planet-core,
   .planet-star {
@@ -616,11 +633,10 @@ const f = (n: number) => n.toFixed(1);
       display: none;
     }
 
-    /* Small icon above each title, so labels stay narrow */
+    /* Small icon beside each title, same as laptops */
     .node[data-side] .label {
-      flex-direction: column;
-      gap: 3px;
-      text-align: center;
+      flex-direction: row;
+      gap: 6px;
     }
 
     .icon {
@@ -668,14 +684,20 @@ const f = (n: number) => n.toFixed(1);
     /* GitHub and Projects labels go above their planets to stay clear of the inner ones */
     .node[data-node='github'] .label,
     .node[data-node='projects'] .label {
-      top: -66px;
+      top: -44px;
     }
 
-    /* Contact label sits to the right of its planet, clear of Education below */
-    .node[data-node='contact'] .label {
+    /* Education label sits to the right of its planet, clear of Experience */
+    .node[data-node='education'] .label {
       left: 20px;
       top: 0;
       transform: translateY(-50%);
+    }
+
+    /* Experience is near the left edge, so its label starts at the planet instead of centring */
+    .node[data-node='experience'] .label {
+      left: -16px;
+      transform: none;
     }
   }
 </style>
