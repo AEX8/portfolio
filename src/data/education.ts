@@ -55,7 +55,6 @@ export const COURSE_GROUPS: CourseGroup[] = [
       'Machine Learning',
       'Deep Learning',
       'Artificial Intelligence',
-      'Intelligent Decision Making',
       'Foundations of Artificial Intelligence',
     ],
   },
@@ -70,6 +69,10 @@ export const COURSE_GROUPS: CourseGroup[] = [
   {
     name: 'Theory and maths',
     courses: ['Computing Theory', 'Mathematics for Computing 1', 'Introduction to Mathematics for Computing'],
+  },
+  {
+    name: 'Industry and innovation',
+    courses: ['Innovation Ecosystem and the Future of Work'],
   },
 ];
 
