@@ -31,11 +31,12 @@ export const ROLES: Role[] = [
     start: 'Sep 2026',
     end: 'Dec 2026',
     bullets: [
-      'Led a team of five building an AI powered, 2D RPG style consulting simulation game that trains junior and graduate consultants.',
+      'Led a team of five building an AI powered, 2D RPG style consulting simulation game that trains junior and graduate consultants, delivered over three sprints.',
       'Owned all communication with the IBM client and every project management duty for the team.',
       'Contributed as a developer alongside managing the project.',
       'Set up the separate demo repository, the Firebase project and the Vercel deployment for the showcase.',
       'Led the team through an industry showcase event organised with IBM, RMIT, Microsoft, Amazon, Telstra, NBN and the Grand Prix.',
+      'Achieved a High Distinction for the capstone, with a final mark of 86.9 out of 100.',
     ],
     logo: 'ibm',
     project: 'ibm-consulting-game',
@@ -54,5 +55,5 @@ export const ROLES: Role[] = [
 
 // Non tech roles, one line each
 export const OTHER_ROLES: SmallItem[] = [
-  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality', logo: 'cedar' },
+  { title: 'Customer Support and Showroom', org: 'Cedar Hospitality', period: 'Part time · Apr 2025 to Present', logo: 'cedar' },
 ];
